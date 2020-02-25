@@ -1,0 +1,126 @@
+{% include "layout/header.html" %}
+<style>
+    body{
+        overflow-y:scroll !important;
+        padding-top:20px !important;
+    }
+    body>.container-fluid{
+        padding-bottom:20px;
+    }
+
+    @media print{
+        #btn_print{
+            display:none;
+        }
+    }
+    @media print{
+        @page {size: landscape}
+    }
+    table td{
+        font-size:8px;
+    }
+
+    .table th, .table td{
+        padding:8px 1px;
+        text-align:center;
+    }
+
+    table.mask_set_table tbody tr td:first-child{
+        font-size:8px;
+        padding:8px 1px;
+    }
+</style>
+
+<div class="row-fluid">
+    <div class="span12">
+        <div class="row-fluid">
+            <button id="btn_print" class="btn btn-primary floatR marR-15" onclick="print();">Print</button>
+        </div>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <div class="row-fluid">
+            ATF 1.0<br>
+            8&#09;5<br>
+            "Type=GenePix ArrayList V1.0"<br>
+            "Version={{ recipe_header.name }}"<br>
+            "BlockCount=1"<br>
+            "BlockType=0"<br>
+            "Protocol={{ recipe_header.protocol }}"<br>
+            "Supplier={{ recipe_header.supplier }}"<br>
+            "Block1= "{{ recipe_header.x_origin }},&#09;{{ recipe_header.y_origin }},&#09;{{ recipe_header.feature_diameter }},&#09;{{ recipe_header.x_features }},&#09;{{ recipe_header.x_spacing }},&#09;{{ recipe_header.y_features }},&#09;{{ recipe_header.y_spacing }}"<br>
+        </div>
+        <div class="row-fluid">
+            <table id="recipe_table" class="mask_set_table table table-bordered" cellpadding="0" cellspacing="0" width="100%">
+                <thead>
+                    <td class="bold"></td>
+                    {% for i in range(1, recipe_header.x_features + 1)%}
+                        <td>{{ i }}</td>
+                    {% endfor %}
+                </thead>
+                <tbody>
+                    {% set index = 0 %}
+                    {% for mask_i in mask_array %}
+                        {% set mask_set_num = mask_i.split(",")[0] %}
+                        {% set design_short = mask_i.split(",")[1] %}
+
+                        <tr>
+                            <td class="bold mask_name">Mask {{ mask_set_num }}</td>
+                            {% for i in range(1, recipe_header.x_features + 1)%}
+                                <td></td>
+                            {% endfor %}
+                        </tr>
+
+
+                        {% set col = 1 %}
+                        {% set row = 1 %}
+                        {% for design_detail in design_details %}
+                            {% set tmp = "" %}
+                            {% set design_mask_array = design_detail.mask.split(",") %}
+                            {% if design_mask_array|length >= mask_set_num|int %}
+                                 {% set tmp = design_mask_array[mask_set_num|int - 1] %}
+                            {% endif %}
+                            {% set value = "" %}
+                            {% if tmp == "1" %}
+                                {% set value = design_short %}
+                            {% endif %}
+
+
+                            {% if col == 1 %}
+                                <tr><td>{{ row }}</td><td>{{ value }}</td>
+                            {% elif col <= recipe_header.x_features %}
+                                <td>{{ value }}</td>
+                            {% else %}
+                                </tr>
+                            {% endif %}
+
+
+                            {% if col >= recipe_header.x_features %}
+                                {% set col = 1 %}
+                                {% set row = row + 1 %}
+                            {% else %}
+                                {% set col = col + 1 %}
+                            {% endif %}
+
+                            {% set index = index + 1 %}
+                        {% endfor %}
+
+
+
+                        {% set index = index + 1 %}
+
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% include "layout/footer.html" %}
+<script>
+    $(document).ready(function() {
+        print();
+    });
+
+
+</script>

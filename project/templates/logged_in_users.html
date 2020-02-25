@@ -1,0 +1,110 @@
+{% include "layout/header.html" %}
+{% include "layout/nav.html" %}
+    <div class="row-fluid">
+        <div class="span12">
+
+            <div class="clear"></div>
+            <table id="logged_in_userstable" class="table table-bordered dataTable" cellpadding="0" cellspacing="0">
+                <thead>
+                    <th>UserID</th>
+                    <th>Username</th>
+                    <th>Time of Log</th>
+                    <th>Computer Name</th>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% include "layout/footer.html" %}
+
+
+<script>
+    var usersTable = null;
+    var usersTableEditor;
+
+    $(function() {
+        usersTable = $('#logged_in_userstable').DataTable({
+            "searching":true,
+			"bInfo":false,
+			"scrollY":300,
+			"scrollX":false,
+			"paging":         false,
+            "ordering":false,
+            columns:[
+                {data:"userid"},
+                {data:"username"},
+                {data:"timeoflog"},
+                {data:"computer_name"}
+            ],
+            columnDefs:[
+                {
+                    "targets":[0],
+                    "visible":false
+                },
+                {
+                    "targets":[2],
+                    "className":"dt-center"
+                }
+            ]
+        });
+
+        adjustTableHeight();
+        $(window).resize(function() {
+           adjustTableHeight();
+        });
+        loadLoggedInUsers();
+    });
+
+    /**
+     *  Adjust Table Height
+     * */
+    function adjustTableHeight(){
+        var table_header_height = $('#logged_in_userstable_wrapper .dataTables_scrollHead').height();
+        $('#logged_in_userstable_wrapper .dataTables_scrollBody').height($(window).height() - table_header_height - 100);
+        usersTable.columns.adjust().draw();
+    }
+
+    /**
+     * Load all users and show them on the datatable.
+     */
+    function loadLoggedInUsers(){
+        $.ajax({
+            type:'POST',
+            url: "{{ url_for('get_loggedin_users')}}",
+            processData:false,
+            contentType:false,
+            dataType:"text",
+            success: function(response) {
+                try{
+                    var data = JSON.parse(response);
+                    if ( data['result'] == 'SUCCESS'){
+                        for(var i=0;i<data['data'].length;i++){
+                            var user = data['data'][i];
+                            var last_login = '';
+                            if ( user['last_login'] ){
+                                var tmp = new Date(user['last_login']);
+                                last_login = tmp.getFullYear() + "/" + ("0" + (tmp.getMonth()+1)).slice(-2) + "/" + ("0" + tmp.getDate()).slice(-2) + " " + tmp.getHours() + ":" + tmp.getMinutes() + ":" + tmp.getSeconds();
+                            }
+
+                            usersTable.rows.add([
+                                {
+                                    "userid": user['id'],
+                                    "username": user['username'],
+                                    "timeoflog": last_login,
+                                    "computer_name": user['computer_name']
+                                }
+                            ]).draw();
+
+                        }
+                    }
+                }catch(error) {
+                    console.log(error);
+                }
+            },
+            error:function(error){
+                console.log(error);
+            }
+        });
+    }
+</script>

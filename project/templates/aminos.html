@@ -1,0 +1,740 @@
+{% include "layout/header.html" %}
+{% include "layout/nav.html" %}
+<input class="dot-object">
+<input type="password" class="dot-object">
+
+<div id="operation_bar" class="row-fluid marB-10">
+    {% if g.user.amino_editor == -1 %}
+    <button id="btn_add" class="btn btn-primary" onclick="showAddAminoDlg();"><i class="icon-plus-sign icon-white"></i> Add</button>
+    <button id="btn_edit" class="btn btn-primary" onclick="clickedEdit();"><i class="icon-pencil icon-white"></i> Edit</button>
+    <button id="btn_save" class="btn btn-success hidden" onclick="clickedSave();"><i class="icon-check icon-white"></i> Save</button>
+    <button id="btn_cancel" class="btn btn-warning hidden" onclick="clickedCancel();"><i class="icon-remove-sign icon-white"></i> Cancel</button>
+    {% endif %}
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <table id="aminos_table" class="table table-bordered" cellpadding="0" cellspacing="0">
+            <thead>
+                <th hidden>id</th>
+                <th hidden>active</th>
+                <th hidden>eid</th>
+                <th>Amino Acid</th>
+                <th>Short</th>
+                <th>Abbre</th>
+                <th hidden>Formula</th>
+                <th>Mon mass</th>
+                <th hidden>Avg mass</th>
+                <th>Protect Group</th>
+                <th>Notes</th>
+                <th>Editor</th>
+                <th>Active</th>
+            </thead>
+        </table>
+    </div>
+</div>
+{% include "layout/footer.html" %}
+
+<div id="modal_new_amino" class="modal fade design-modal"  style="display: none;width:600px;margin-left:-300px;">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+                <div class="row-fluid title">
+                    Add Amino Acid
+                </div>
+
+                <div class="row-fluid">
+                    <label class="span4 control-label">Amino Acid:</label>
+                    <div class="span8">
+                        <input id="modal_new_amino_name" type="text" class="form-control">
+                        <div id="modal_new_amino_name_error" class="val_error text-left"></div>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <label class="span4 control-label">Short:</label>
+                    <div class="span8">
+                        <input id="modal_new_amino_short" type="text" class="form-control">
+                        <div id="modal_new_amino_short_error" class="val_error text-left"></div>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <label class="span4 control-label">Abbre:</label>
+                    <div class="span8">
+                        <input id="modal_new_amino_abbre" type="text" class="form-control">
+                        <div id="modal_new_amino_abbre_error" class="val_error text-left"></div>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <label class="span4 control-label">Mon mass:</label>
+                    <div class="span8">
+                        <input id="modal_new_amino_mon_mass" type="text" class="form-control">
+                        <div id="modal_new_amino_mon_mass_error" class="val_error text-left"></div>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <label class="span4 control-label">Protect Group:</label>
+                    <div class="span8">
+                        <input id="modal_new_amino_protgrp" type="text" class="form-control">
+                        <div id="modal_new_amino_protgrp_error" class="val_error text-left"></div>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <label class="span4 control-label">Notes:</label>
+                    <div class="span8">
+                        <textarea id="modal_new_amino_notes" type="text" class="form-control"></textarea>
+                        <div id="modal_new_amino_notes_error" class="val_error text-left"></div>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <label class="span4 control-label">Editor:</label>
+                    <div class="span8">
+                        <select id="modal_new_amino_editor" class="form-control width-100">
+                            {% for user in users %}
+                                <option value="{{ user.id }}">{{ user.username }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <div id="modal_new_amino_editor_error" class="val_error text-left"></div>
+                    </div>
+                </div>
+
+
+                <div class="row-fluid marT-10 hidden">
+                    <label class="span4 control-label">Formula:</label>
+                    <div class="span8">
+                        <input id="modal_new_amino_formula" type="text" class="form-control">
+                        <div id="modal_new_amino_formula_error" class="val_error text-left"></div>
+                    </div>
+                </div>
+
+
+
+                <div class="row-fluid marT-10 hidden">
+                    <label class="span4 control-label">Avg mass:</label>
+                    <div class="span8">
+                        <input id="modal_new_amino_avg_mass" type="text" class="form-control">
+                        <div id="modal_new_amino_avg_mass_error" class="val_error text-left"></div>
+                    </div>
+                </div>
+
+
+
+                <div class="row-fluid marT-10">
+                    <label class="span4 control-label">Active:</label>
+                    <div class="span8">
+                        <select id="modal_new_amino_active" type="text" class="form-control width-100">
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="row-fluid marT-10">
+                    <div class="span12">
+                        <div id="modal_new_amino_error" class="val_error"></div>
+                    </div>
+                </div>
+
+                <div class="row-fluid buttons">
+                    <div class="button left" onclick="onClickedConfirmAddNewAmino();">Confirm</div>
+                    <div class="button right marL-10" onclick="onClickedCancelAddNewAmino();">Cancel</div>
+                </div>
+			</div>
+	</div>
+	</div>
+</div>
+
+<div id="modal_confirm_delete" class="modal fade design-modal"  style="display: none;width:400px;margin-left:-200px;">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+                <div class="row-fluid title">
+                    Are you sure you want to delete the selected rows?
+                </div>
+
+                <div class="row-fluid buttons">
+                    <div class="button left" onclick="onClickedConfirmDeleteAmino();">Yes</div>
+                    <div class="button right marL-10" onclick="onClickedCancelDeleteAmino();">No</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var aminosTable;
+    var editor;
+    var b_edit_mode = false;
+
+    $(document).ready(function() {
+        aminosTable = $('#aminos_table').DataTable({
+             "searching":false,
+             "bInfo":false,
+             "scrollY":400,
+             "scrollX":false,
+             "paging":false,
+             "ordering":true,
+             "order":[],
+             "selectable":false,
+             columns:[
+                 {data:'id'},
+                 {data:'active'},
+                 {data:'eid'},
+                 {data:'aminoacid'},
+                 {data:'short'},
+                 {data:'abbre'},
+                 {data:'formula'},
+                 {data:'monmass'},
+                 {data:'avgmass'},
+                 {data:'protgrp'},
+                 {data:'notes'},
+                 {data:'eid_text'},
+                 {data:'active_text'}
+             ],
+             columnDefs:[
+                 {
+                     "targets":[0,1,2,6,8],
+                     "visible":false
+                 },
+                 {
+                     "targets":[7,8,9],
+                     "class":"dt-right"
+                 },
+                 {
+                    "targets":[9],
+                    "width":"100px"
+                 },
+                 {
+                     "targets":[12],
+                     "class":"dt-center",
+                     "width":"80px"
+                 }
+             ]
+        });
+        var eids = [{label:'', value:0}];
+        {% for user in users %}
+            eids.push({
+                label: "{{ user.username }}",
+                value: {{ user.id }}
+            });
+        {% endfor %}
+        editor = new $.fn.dataTable.Editor({
+            ajax:"{{ url_for('aminos_edit') }}",
+            table:"#aminos_table",
+            idSrc: 'id',
+            fields:[
+                {
+                    label:"Amino Acid",
+                    name:"aminoacid"
+                },
+                {
+                    label: "Short",
+                    name: "short"
+                },
+                {
+                    label: "Abbre",
+                    name: "abbre"
+                },
+                {
+                    label: "Formula",
+                    name: "formula"
+                },
+                {
+                    label: "Mon mass",
+                    name: "monmass"
+                },
+                {
+                    label: "Avg mass",
+                    name: "avgmass"
+                },
+                {
+                    label: "Protect Group",
+                    name: "protgrp"
+                },
+                {
+                    label: "Active",
+                    name: "active_text",
+                    type: "select",
+                    options:[{label:'Yes', value:'1'}, {label:'No', value:'0'}]
+                },
+                {
+                    label: "Editor",
+                    name: "eid_text",
+                    type: "select",
+                    options:eids
+                },
+                {
+                    label: "Notes",
+                    name: "notes"
+                }
+            ]
+        });
+
+        editor.on( 'open', function ( e, json, data ) {
+            if ($('div.DTE #DTE_Field_active_text').length) {
+                var cell = $('div.DTE').parent().parent();
+                var rowindex = aminosTable.row(cell).index();
+                var rowData = aminosTable.row(cell).data();
+                var active = rowData['active'];
+                $('div.DTE #DTE_Field_active_text').val(active);
+            }
+            else if ($('div.DTE #DTE_Field_eid_text').length) {
+                var cell = $('div.DTE').parent().parent();
+                var rowindex = aminosTable.row(cell).index();
+                var rowData = aminosTable.row(cell).data();
+                var eid = rowData['eid'];
+                $('div.DTE #DTE_Field_eid_text').val(eid);
+            }
+
+        });
+
+        $('#aminos_table').on( 'click', 'tbody td', function (e) {
+            if ( b_edit_mode ) {
+                editor.inline(this, {
+                    onBlur: 'submit'
+                });
+            }
+	    });
+
+        aminosTable.on('select', function(e, dt, type, indexes) {
+            /*
+            var selectedRows = aminosTable.rows(".selected");
+            if ( selectedRows.count() > 0 ) {
+            }
+            else{
+            }
+            */
+        });
+
+        aminosTable.on('deselect', function(e, dt, type, indexes){
+            /*
+            var selectedRows = aminosTable.rows(".selected");
+            if ( selectedRows.count() > 0 ) {
+            }
+            else{
+            }
+            */
+        });
+
+        $('#modal_new_amino input').keypress(function(event){
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+	        if(keycode == '13') {
+                onClickedConfirmAddNewAmino();
+            }
+        });
+
+        getAminos();
+
+        adjustControls();
+        $(window).resize(function() {
+             adjustControls();
+        });
+    });
+
+    /* Adjust Control Layout */
+    function adjustControls(){
+        var table_header_height = $('#aminos_table_wrapper .dataTables_scrollHead').height();
+        var operation_bar_height = $('#operation_bar').height();
+		$('#aminos_table_wrapper .dataTables_scrollBody').height($(window).height() - table_header_height - operation_bar_height - 100);
+
+		aminosTable.columns.adjust().draw();
+    }
+
+    /* Show Add Amino Acid Dialog */
+    function showAddAminoDlg(){
+        $('#modal_new_amino_name').val('');
+        $('#modal_new_amino_name_error').html('');
+        $('#modal_new_amino_short').val('');
+        $('#modal_new_amino_short_error').html('');
+        $('#modal_new_amino_abbre').val('');
+        $('#modal_new_amino_abbre_error').html('');
+        $('#modal_new_amino_formula').val('');
+        $('#modal_new_amino_formula_error').html('');
+        $('#modal_new_amino_mon_mass').val('');
+        $('#modal_new_amino_mon_mass_error').html('');
+        $('#modal_new_amino_avg_mass').val('');
+        $('#modal_new_amino_avg_mass_error').html('');
+        $('#modal_new_amino_protgrp').val('');
+        $('#modal_new_amino_protgrp_error').html('');
+        $('#modal_new_amino_active').val(1);
+        $('#modal_new_amino_notes').val('');
+        $('#modal_new_amino_notes_error').html('');
+        $('#modal_new_amino_editor').val({{ g.user.id }});
+
+
+        $('#modal_new_amino').on('shown.bs.modal', function(){
+            $('#modal_new_amino_name').focus();
+        });
+        $('#modal_new_amino').modal({backdrop:'static', keyboard:false});
+    }
+
+    var bAddingAmino = false;
+
+    /* Confirm Add New Amino */
+    function onClickedConfirmAddNewAmino(){
+        if ( bAddingAmino )
+            return;
+
+        var amino = $('#modal_new_amino_name').val().trim();
+        var short = $('#modal_new_amino_short').val().trim();
+        var abbre = $('#modal_new_amino_abbre').val().trim();
+        var formula = $('#modal_new_amino_formula').val().trim();
+        var mon_mass = $('#modal_new_amino_mon_mass').val().trim();
+        var avg_mass = $('#modal_new_amino_avg_mass').val().trim();
+        var protgrp = $('#modal_new_amino_protgrp').val().trim();
+        var active = $('#modal_new_amino_active').val();
+        var active_text = $('#modal_new_amino_active option:selected').text();
+        var notes = $('#modal_new_amino_notes').val().trim();
+        var editor = $('#modal_new_amino_editor').val();
+        var editor_text = $('#modal_new_amino_editor option:selected').text();
+
+
+        if ( amino.length == 0 ){
+            $('#modal_new_amino_name_error').html('Amino Acid is required.');
+            $('#modal_new_amino_name').focus();
+            return;
+        }else{
+            $('#modal_new_amino_name_error').html('');
+        }
+
+        if ( short.length == 0 ){
+            $('#modal_new_amino_short_error').html('Short is required.');
+            $('#modal_new_amino_short').focus();
+            return;
+        }else{
+            $('#modal_new_amino_short_error').html('');
+        }
+
+        if ( abbre.length == 0 ){
+            $('#modal_new_amino_abbre_error').html('Abbre is required.');
+            $('#modal_new_amino_abbre').focus();
+            return;
+        }else{
+            $('#modal_new_amino_abbre_error').html('');
+        }
+
+        if ( editor == null ){
+            $('#modal_new_amino_editor_error').html('Editor is required.');
+            $('#modal_new_amino_editor').focus();
+            return;
+        }else{
+            $('#modal_new_amino_editor_error').html('');
+        }
+
+        if ( mon_mass.length == 0){
+            $('#modal_new_amino_mon_mass_error').html('Mon mass is required.');
+            $('#modal_new_amino_mon_mass').focus();
+            return;
+        }else if ( isNaN(mon_mass) ){
+            $('#modal_new_amino_mon_mass_error').html('Mon mass should be float.');
+            $('#modal_new_amino_mon_mass').focus();
+            return;
+        }else{
+            $('#modal_new_amino_mon_mass_error').html('');
+        }
+
+        if ( protgrp.length == 0){
+            $('#modal_new_amino_protgrp_error').html('Protect group is required.');
+            $('#modal_new_amino_protgrp').focus();
+            return;
+        }else if ( isNaN(protgrp) ){
+            $('#modal_new_amino_protgrp_error').html('Protect group should be float.');
+            $('#modal_new_amino_protgrp').focus();
+            return;
+        }else{
+            $('#modal_new_amino_protgrp_error').html('');
+        }
+
+
+        /*
+        if ( formula.length == 0 ){
+            $('#modal_new_amino_formula_error').html('Formula is required.');
+            $('#modal_new_amino_formula').focus();
+            return;
+        }else{
+            $('#modal_new_amino_formula_error').html('');
+        }
+
+
+
+        if ( avg_mass.length == 0){
+            $('#modal_new_amino_avg_mass_error').html('Avg mass is required.');
+            $('#modal_new_amino_avg_mass').focus();
+            return;
+        }else if ( isNaN(avg_mass)){
+            $('#modal_new_amino_avg_mass_error').html('Avg mass should be float.');
+            $('#modal_new_amino_avg_mass').focus();
+            return;
+        }else{
+            $('#modal_new_amino_avg_mass_error').html('');
+        }
+        */
+
+        var fd=new FormData();
+        fd.append("amino", amino);
+        fd.append("short", short);
+        fd.append('abbre', abbre);
+        fd.append("formula", formula);
+        fd.append("mon_mass", mon_mass);
+        //fd.append("avg_mass", avg_mass);
+        //fd.append("mon_mass", 0);
+        fd.append("avg_mass", 0);
+        fd.append("protgrp", protgrp);
+        fd.append("active", active);
+        fd.append("notes", notes);
+        fd.append("editor", editor);
+
+        bAddingAmino = true;
+        $.ajax({
+            type:'POST',
+            url: "{{ url_for('add_amino_acid')}}",
+            processData:false,
+            contentType:false,
+            dataType:"text",
+            data:fd,
+            success: function(response) {
+                bAddingAmino = false;
+                var msg = 'Operation failed.';
+                try{
+                    var data = JSON.parse(response);
+                    if ( data['result'] == 'SUCCESS'){
+                        $('#modal_new_amino').modal('hide');
+
+                        aminosTable.rows.add([
+                            {
+                                "id": data['id'],
+                                "eid": editor,
+                                "eid_text": editor_text,
+                                "active": active,
+                                "aminoacid": amino,
+                                "short": short,
+                                "abbre": abbre,
+                                "formula": formula,
+                                "monmass": mon_mass,
+                                "avgmass": avg_mass,
+                                "protgrp": protgrp,
+                                "active_text": active_text,
+                                "notes": notes
+                            }
+                        ]).draw();
+                        return;
+                    }else{
+                        msg = data['msg'];
+                    }
+                }catch(error) {
+                    console.log(error);
+                }
+                $('#modal_new_amino_error').html(msg);
+                $('#modal_new_amino_name').focus();
+            },
+            error:function(error){
+                console.log(error);
+            }
+        });
+
+    }
+
+    /* Cancel Add New Amino */
+    function onClickedCancelAddNewAmino(){
+        $('#modal_new_amino').modal('hide');
+    }
+
+    /* Get Amino Acids */
+    function getAminos(){
+        aminosTable.clear().draw();
+        $.ajax({
+            type:'POST',
+            url: "{{ url_for('get_amino_acids')}}",
+            processData:false,
+            contentType:false,
+            dataType:"text",
+            success: function(response) {
+                var msg = 'Operation failed.';
+                try{
+                    var data = JSON.parse(response);
+                    if ( data['result'] == 'SUCCESS'){
+                        aminosTable.clear().draw();
+                        for(var i=0;i<data['data'].length;i++){
+                            var amino = data['data'][i];
+                            aminosTable.rows.add([
+                                {
+                                    "id": amino['id'],
+                                    "eid": amino['eid'],
+                                    "active": amino['active'],
+                                    "aminoacid": amino['aminoacid'],
+                                    "short": amino['short'],
+                                    "abbre": amino['abbre'],
+                                    "formula": amino['formula'],
+                                    "monmass": amino['monmass'],
+                                    "avgmass": amino['avgmass'],
+                                    "protgrp": amino['protgrp'],
+                                    "notes": amino['notes'],
+                                    "eid_text": amino['eid_text'],
+                                    "active_text": amino['active_text']
+                                }
+                            ]);
+                        }
+                        aminosTable.draw();
+                        adjustControls();
+
+                        return;
+                    }else{
+                        msg = data['msg'];
+                    }
+                }catch(error) {
+                    console.log(error);
+                }
+            },
+            error:function(error){
+                console.log(error);
+            }
+        });
+    }
+
+
+    /* Show Edit Dialog */
+    function clickedEdit(){
+        b_edit_mode = true;
+
+        var selectedRows = aminosTable.rows(".selected");
+        selectedRows.deselect();
+
+        $('#btn_add').addClass("hidden");
+        $('#btn_edit').addClass("hidden");
+        $('#btn_save').removeClass("hidden");
+        $('#btn_cancel').removeClass("hidden");
+    }
+
+    /* Save changes */
+    function clickedSave(){
+        editor.submit();
+
+        var fd=new FormData();
+        $.ajax({
+            type:'POST',
+            url: "{{ url_for('update_aminoacids')}}",
+            processData:false,
+            contentType:false,
+            dataType:"text",
+            data:fd,
+            success: function(response) {
+                console.log(response);
+
+                b_edit_mode = false;
+
+                $('#btn_add').removeClass("hidden");
+                $('#btn_edit').removeClass("hidden");
+                $('#btn_save').addClass("hidden");
+                $('#btn_cancel').addClass("hidden");
+
+                getAminos();
+            },
+            error:function(error){
+                console.log(error);
+            }
+        });
+
+
+    }
+
+    /* Cancel changes */
+    function clickedCancel(){
+        editor.submit();
+        var fd=new FormData();
+        $.ajax({
+            type:'POST',
+            url: "{{ url_for('cancel_aminoacids')}}",
+            processData:false,
+            contentType:false,
+            dataType:"text",
+            data:fd,
+            success: function(response) {
+                console.log(response);
+
+                b_edit_mode = false;
+
+                $('#btn_add').removeClass("hidden");
+                $('#btn_edit').removeClass("hidden");
+                $('#btn_save').addClass("hidden");
+                $('#btn_cancel').addClass("hidden");
+
+                getAminos();
+            },
+            error:function(error){
+                console.log(error);
+            }
+        });
+    }
+
+
+    /* Delete Amino Acids */
+    function clickedDelete(){
+        var selectedRows = aminosTable.rows(".selected");
+        if ( selectedRows.count() == 0 ){
+            $('#footer_modal_alert .modal-text').text("Please select aminos.");
+			$('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+			return;
+        }
+
+        $('#modal_confirm_delete').modal({backdrop:'static', keyboard:false});
+    }
+
+    function onClickedConfirmDeleteAmino(){
+        $('#modal_confirm_delete').modal("hide");
+
+        var ids = "";
+        var selectedRows = aminosTable.rows(".selected");
+        var selectedData = selectedRows.data();
+        for(var i=0; i < selectedData.count();i++){
+            var data = selectedData[i];
+            if ( ids == "" ){
+                ids = data['id'];
+            }else{
+                ids += "," + data['id'];
+            }
+        }
+
+        var fd=new FormData();
+        fd.append("ids", ids);
+
+        $.ajax({
+            type:'POST',
+            url: "{{ url_for('delete_amino_acids')}}",
+            processData:false,
+            contentType:false,
+            dataType:"text",
+            data:fd,
+            success: function(response) {
+                var msg = 'Operation Failed.';
+                try{
+                    var data = JSON.parse(response);
+                    if ( data['result'] == 'SUCCESS'){
+                        selectedRows.remove().draw(false);
+                        return;
+                    }else{
+                        msg = data['msg'];
+                    }
+                }catch(error) {
+                    console.log(error);
+                }
+                $('#footer_modal_alert .modal-text').text(msg);
+			    $('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+            },
+            error:function(error){
+                console.log(error);
+            }
+        });
+    }
+
+    function onClickedCancelDeleteAmino(){
+        $('#modal_confirm_delete').modal("hide");
+    }
+
+
+</script>

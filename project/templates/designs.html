@@ -1,0 +1,2173 @@
+{% include "layout/header.html" %}
+{% include "layout/nav.html" %}
+<input class="dot-object" title="">
+<input type="password" class="dot-object" title="">
+
+<div id="operation_bar" class="row-fluid marB-10 text-right">
+    <!--
+    <button id="btn_lookup" class="btn btn-primary" onclick="clickedLookup();" title="Lookup Design"><i class="icon-eye-open icon-white"></i> Lookup</button>
+    {% if g.user.design_editor == -1 %}
+    <button id="btn_add" class="btn btn-primary" onclick="clickedAdd();" title="Add Design"><i class="icon-plus-sign icon-white"></i> Add</button>
+    <button id="btn_edit" class="btn btn-primary" onclick="clickedEdit();" title="Edit Design"><i class="icon-pencil icon-white"></i> Edit</button>
+    <button id="btn_save" class="btn btn-success hidden" onclick="clickedSave();" title="Save Changes"><i class="icon-check icon-white"></i> Save</button>
+    <button id="btn_cancel" class="btn btn-warning hidden" onclick="clickedCancel();" title="Cancel Changes"><i class="icon-remove-sign icon-white"></i> Cancel</button>
+    {% endif %}
+    -->
+
+    <div class="inline-block floatL">
+        <input id="active_toogle" type="checkbox" checked data-toggle="toogle" data-on="Active" data-off="Inactive" data-size="mini" data-width="70" data-height="22"  style="display:none;">
+    </div>
+
+    <div class="inline-block floatL marL-10">
+        <input id="maldi_toogle" type="checkbox" checked data-toggle="toogle" data-on="All" data-off="MALDI" data-size="mini" data-width="70" data-height="22"  style="display:none;">
+    </div>
+
+    <button id="btn_add" class="btn btn-primary" onclick="clickedMaskDetailAdd();"><i class="icon-plus-sign icon-white"></i> Add</button>
+    <button id="btn_edit" class="btn btn-primary" onclick="clickedMaskDetailEdit();" disabled><i class="icon-pencil icon-white"></i> Edit</button>
+    <button id="btn_save" class="btn btn-success hidden" onclick="clickedMaskDetailSave();"><i class="icon-check icon-white"></i> Save</button>
+    <button id="btn_cancel" class="btn btn-warning hidden" onclick="clickedMaskDetailCancel();"><i class="icon-remove-sign icon-white"></i> Cancel</button>
+</div>
+
+<div class="row-fluid">
+    <div class="span8">
+        <table id="designs_table" class="table table-bordered" cellpadding="0" cellspacing="0">
+            <thead>
+                <th></th>
+                <th hidden>id</th>
+                <th hidden>block_type_id</th>
+                <th hidden>Active</th>
+                <th hidden>IsMaldi</th>
+                <th>Protocol</th>
+                <th>Supplier</th>
+                <th hidden>X Origin</th>
+                <th hidden>Y Origin</th>
+                <th hidden>Feature Diameter</th>
+                <th hidden>X Features</th>
+                <th hidden>X Spacing</th>
+                <th hidden>Y Features</th>
+                <th hidden>Y Spacing</th>
+                <th>Features</th>
+                <th>Masks</th>
+                <th>Date</th>
+                <th>Maldi</th>
+                <th>Active</th>
+                <th hidden>Labels</th>
+            </thead>
+        </table>
+    </div>
+
+    <div class="span4">
+        <div class="row-fluid block">
+            <div class="header">
+                <div class="title">
+                    Mask Set Detail
+                </div>
+            </div>
+
+            <div class="clear"></div>
+            <div class="span12 content marL-0 padB-10">
+                <div class="row-fluid marT-10">
+                    <div class="span4 control-label">Maldi:</div>
+                    <div class="span2 padT-3">
+                        <input id="detail_maldi" class="uniform_on" type="checkbox" disabled>
+                    </div>
+                    <div class="span5">
+                        <div class="span3 control-label">Active:</div>
+                        <div class="span8 padT-3">
+                            <input id="detail_active" class="uniform_on" type="checkbox" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <div class="span4 control-label">Protocol:</div>
+                    <div class="span7">
+                        <input id="detail_protocol" class="form-control" type="text" disabled>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <div class="span4 control-label">Supplier:</div>
+                    <div class="span7">
+                        <input id="detail_supplier" class="form-control" type="text" disabled>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <div class="span4 control-label">Block Type:</div>
+                    <div class="span7">
+                        <select id="detail_block_type" class="form-control width-100" disabled>
+                            {% for blocktype in blocktypes %}
+                                <option value="{{ blocktype.id }}">{{ blocktype.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="row-fluid marT-10">
+                    <div class="span4 control-label">X Origin:</div>
+                    <div class="span7">
+                        <input id="detail_x_origin" class="form-control" type="text" disabled>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <div class="span4 control-label">Y Origin:</div>
+                    <div class="span7">
+                        <input id="detail_y_origin" class="form-control" type="text" disabled>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <div class="span4 control-label">Feature Diameter:</div>
+                    <div class="span7">
+                        <input id="detail_feature_diameter" class="form-control" type="text" disabled>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <div class="span4 control-label">X Features:</div>
+                    <div class="span7">
+                        <input id="detail_x_features" class="form-control" type="text" disabled>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <div class="span4 control-label">X Spacing:</div>
+                    <div class="span7">
+                        <input id="detail_x_spacing" class="form-control" type="text" disabled>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <div class="span4 control-label">Y Features:</div>
+                    <div class="span7">
+                        <input id="detail_y_features" class="form-control" type="text" disabled>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <div class="span4 control-label">Y Spacing:</div>
+                    <div class="span7">
+                        <input id="detail_y_spacing" class="form-control" type="text" disabled>
+                    </div>
+                </div>
+
+                <div id="detail_file_wrapper" class="row-fluid marT-10 hidden">
+                    <div class="span4 control-label">Detail File:</div>
+                    <div class="span7">
+                        <input id="detail_file" name="detail_file" type="file" class="form-control" disabled>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="header_part" class="row-fluid panel hidden">
+    <div class="span12 header accordian" onclick="onClickedTopCollapse();">
+        <div id="header_title" class="pull-left title hidden">
+            Design Data
+        </div>
+        <div class="pull-right">
+            <i id="btn_design_header_accordian" class="icon-chevron-up icon-white mar-10"></i>
+        </div>
+    </div>
+
+    <div class="clear"></div>
+    <div class="span12 marL-0" id="header_part_content">
+        <div class="span3 marT-10 marB-10">
+            <div class="row-fluid">
+                <div class="span5 control-label">Protocol:</div>
+                <div class="span7">
+                    <input id="protocol" class="form-control" type="text" disabled>
+                </div>
+            </div>
+
+            <div class="row-fluid marT-5">
+                <div class="span5 control-label">Supplier:</div>
+                <div class="span7">
+                    <input id="supplier" class="form-control" type="text" disabled>
+                </div>
+            </div>
+
+            <div class="row-fluid marT-5">
+                <div class="span5 control-label">Block Type:</div>
+                <div class="span7">
+                    <select id="block_type" class="form-control width-100" disabled>
+                        {% for blocktype in blocktypes %}
+                            <option value="{{ blocktype.id }}">{{ blocktype.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="row-fluid marT-5">
+                <div class="span5 control-label">Active:</div>
+                <div class="span7 text-left">
+                    <select id="active" class="form-control width-100">
+                        <option value="1">Yes</option>
+                        <option value="0">No</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="span3 marT-10 marB-10">
+            <div class="row-fluid">
+                <div class="span5 control-label">X Origin:</div>
+                <div class="span7">
+                    <input id="x_origin" class="form-control" type="text" disabled>
+                </div>
+            </div>
+
+            <div class="row-fluid marT-5">
+                <div class="span5 control-label">Y Origin:</div>
+                <div class="span7">
+                    <input id="y_origin" class="form-control" type="text" disabled>
+                </div>
+            </div>
+
+            <div class="row-fluid marT-5">
+                <div class="span5 control-label">Feature Diameter:</div>
+                <div class="span7">
+                    <input id="feature_diameter" class="form-control" type="text" disabled>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="span3 marT-10 marB-10">
+
+            <div class="row-fluid">
+                <div class="span5 control-label">X Features:</div>
+                <div class="span7">
+                    <input id="x_features" class="form-control" type="text" disabled>
+                </div>
+            </div>
+
+            <div class="row-fluid marT-5">
+                <div class="span5 control-label">X Spacing:</div>
+                <div class="span7">
+                    <input id="x_spacing" class="form-control" type="text" disabled>
+                </div>
+            </div>
+
+            <div class="row-fluid marT-5">
+                <div class="span5 control-label">Y Features:</div>
+                <div class="span7">
+                    <input id="y_features" class="form-control" type="text" disabled>
+                </div>
+            </div>
+
+            <div class="row-fluid marT-5">
+                <div class="span5 control-label">Y Spacing:</div>
+                <div class="span7">
+                    <input id="y_spacing" class="form-control" type="text" disabled>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div id="third_column" class="span2 marT-10 marB-10 hidden">
+            <div class="row-fluid">
+                <div class="span5 control-label">Details:</div>
+                <div class="span7 text-left">
+                    <input id="file_details" name="file_details" type="file" class="form-control">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="clear" style="height:10px;"></div>
+<div id="detail_part" class="row-fluid panel hidden">
+    <div class="span12">
+        <table id="design_detail" class="table table-bordered" cellpadding="0" cellspacing="0" width="100%">
+        </table>
+    </div>
+</div>
+
+{% include "layout/footer.html" %}
+
+<div id="modal_confirm_delete" class="modal fade design-modal"  style="display: none;width:400px;margin-left:-200px;">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+                <div class="row-fluid title">
+                    Are you sure you want to delete this mask set?
+                </div>
+
+                <div class="row-fluid buttons">
+                    <div class="button left" onclick="onClickedConfirmDelete();">Yes</div>
+                    <div class="button right marL-10" onclick="onClickedCancelDelete();">No</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal_confirm_readd_mask" class="modal fade design-modal"  style="display: none;width:620px;margin-left:-310px;">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+                <div class="row-fluid title">
+                    Do you want to Replace all Masks in this set with this file or do you want to append it to another mask?<br><br>
+                    To Append the file with it's own Mask Headers just hit the Append button, otherwise select the Mask set to append this file to.
+                </div>
+
+                <div class="row-fluid">
+                    <select id="select_labels"  class="form-control" style="width:80%">
+                    </select>
+                </div>
+
+                <div class="row-fluid marB-30">
+                    <textarea id="textarea_header_columns" class="form-control" rows="6" style="width:calc(80% - 14px);resize:none;" readonly disabled></textarea>
+                </div>
+
+
+                <div class="row-fluid buttons">
+                    <div class="button left" onclick="onClickedAppendMask();">Append</div>
+                    <div class="button right marL-10" onclick="onClickedReplaceMask();">Replace</div>
+                    <div class="button right marL-10" onclick="onClickedCancelMask();">Cancel</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="se-pre-con" style="display:none;">
+    <div class="loader inline-block">
+    </div>
+
+    <p class="text_loader" style="display:none;">Processing...</p>
+</div>
+
+<div id="progress_bar" class="simple-progressbar-wrapper" style="display:none">
+    <div class="box">
+        <div class="title">Processing:</div>
+        <div class="simple-progressbar">
+            <div class="bar"></div>
+            <div class="text"></div>
+        </div>
+    </div>
+</div>
+
+<div id="modal_lookup_designs" class="modal fade design-modal"  style="display: none;width:600px;margin-left:-300px;">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+                <div class="row-fluid title">
+                    Select a Design
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span12">
+                        <table id="designs_lookup_table" class="table table-bordered" cellpadding="0" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th hidden>ID</th>
+                                    <th>Protocol</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row-fluid buttons marT-20">
+                    <div id="btn_ok_select_design" class="button left" onclick="onClickedSelectDesign();" disabled>Ok</div>
+                    <div class="button right marL-10" onclick="onClickedCancelDesign();">Cancel</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal_design_label" class="modal fade design-modal"  style="display: none;width:800px;margin-left:-400px;">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body" style="min-height:150px;">
+                <div class="loader inline-block" style="top:30%;display:none;">
+                </div>
+
+                <div class="row-fluid title">
+                    Edit Masks Headers
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span12 body">
+                    </div>
+                </div>
+
+                <div id="modal_design_label_error" class="row-fluid marT-10 val_error" style="font-size:15px;">
+                    error!
+                </div>
+
+                <div class="row-fluid buttons marT-20">
+                    <div id="btn_confirm_label" class="button left" onclick="onClickedConfirmLabelDialog();" disabled>Confirm</div>
+                    <div class="button right marL-10" onclick="onClickedCancelLabelDialog();">Cancel</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    var lookupTable;
+    var current_design_id={{ current_design_id }};
+    var designDetailTable=null;
+    var designDetailData = [];
+    var view_mode = 0; // 1: edit, 2: add
+    var saving = false;
+
+
+
+
+
+
+    var maskSetsTable;
+    var view_mode = 0; // 1: edit, 2: add
+    var current_mask_set_id = 0;
+
+    var first_loaded = true;
+    var designdetailsLabels = [];
+    $.fn.dataTable.ext.search.push(
+        function( settings, data, dataIndex ) {
+            var result = true;
+
+            if ( first_loaded ) {
+                if ( data[3] == 1 )
+                    return result;
+            }
+
+
+            var active = 0;
+            if ( $('#active_toogle').prop("checked")  )
+                active = 1;
+
+            var active_maldi = 1;
+
+            if ( $('#maldi_toogle').prop("checked")  )
+                active_maldi = 0;
+
+            if ( data[3] == active && data[4] == active_maldi)
+                result = true;
+            else
+                result = false;
+
+            return result;
+        }
+    );
+
+
+    /* key up listener */
+    $(document).keydown(function( event ) {
+        if ( event.ctrlKey && (String.fromCharCode(event.which).toLowerCase() === 'x') ){
+            deleteIfExistSelectedDesigns();
+            event.preventDefault();
+        }
+        else if ( event.ctrlKey && (String.fromCharCode(event.which).toLowerCase() === 'l') ){
+            showLabelDialogForSelectedDesign();
+            event.preventDefault();
+        }
+    });
+
+    $(document).ready(function() {
+        var block_types_options = [];
+        {% for blocktype in blocktypes %}
+            var json_obj = {
+              'value':"{{ blocktype.id }}",
+              'label':"{{ blocktype.name }}"
+            };
+            block_types_options.push(json_obj);
+        {% endfor %}
+
+        {% for designdetailsabel in designdetailslabels %}
+            var json_obj = {
+                'id':"{{ designdetailsabel.id }}",
+                'label':"{{ designdetailsabel.label }}",
+                'label_num':"{{ designdetailsabel.label_num }}"
+            };
+            designdetailsLabels.push(json_obj);
+        {% endfor %}
+
+
+        //////////////////////////////////////////////////////////
+        $(".uniform_on").uniform();
+        $('#active_toogle, #maldi_toogle').bootstrapToggle();
+        $('#active_toogle, #maldi_toogle').change(function() {
+            first_loaded = false;
+
+            $('#maldi_toogle').parent().find(".toggle-group .btn-primary").html("Array");
+
+            if ( maskSetsTable ) {
+                maskSetsTable.draw();
+            }
+        });
+        maskSetsTable = $('#designs_table').DataTable({
+             "searching":true,
+             "bInfo":false,
+             "scrollY":400,
+             "scrollX":false,
+             "paging":false,
+             "select": {
+                 style: 'single'
+             },
+             "ordering":true,
+             "order":[[18, 'desc'], [5, 'asc']],
+             columns:[
+                 {data:'checkbox',defaultContent:'',className:'select-checkbox',orderable:false},
+                 {data:'id'},
+                 {data:'block_type_id'},
+                 {data:'active'},
+                 {data:'is_maldi'},
+                 {data:'protocol'},
+                 {data:'supplier'},
+                 {data:'x_origin'},
+                 {data:'y_origin'},
+                 {data:'feature_diameter'},
+                 {data:'x_features'},
+                 {data:'x_spacing'},
+                 {data:'y_features'},
+                 {data:'y_spacing'},
+                 {data:'feature_num'},
+                 {data:'column_num'},
+                 {data:'date'},
+                 {data:'is_maldi_text'},
+                 {data:'active_text'},
+                 {data:'labels'}
+             ],
+             columnDefs:[
+                 {
+                     "targets":[0],
+                     "width":"20px"
+                 },
+                 {
+                     "targets":[1,2,3,4,6,7, 8, 9, 10, 11, 12,13, 19],
+                     "visible":false
+                 },
+                 {
+                     "targets":[5],
+                     "width": "30%"
+                 },
+                 {
+                     "targets":[14],
+                     "width": "100px",
+                     "class": "dt-center"
+                 },
+                 {
+                     "targets":[15],
+                     "class": "dt-center",
+                     "width": "80px"
+                 },
+                 {
+                     "targets":[16],
+                     "class":"dt-center",
+                     "width": "50px"
+                 },
+                 {
+                     "targets":[17,18],
+                     "class": "dt-center",
+                     "width": "70px"
+                 }
+             ]
+        });
+        maskSetsTable.on( 'select', function ( e, dt, type, indexes ) {
+             if ( view_mode > 0 )
+                 return;
+
+             var rowData = maskSetsTable.rows( ".selected" ).data().toArray();
+             if ( rowData && rowData.length > 0 ) {
+                 $('#btn_edit').removeAttr("disabled");
+                 current_mask_set_id = rowData[0]['id'];
+                 showMaskSetDetail(rowData[0]);
+             }else{
+                 current_mask_set_id = 0;
+                 $('#btn_edit').attr("disabled", "disabled");
+             }
+         })
+         .on( 'deselect', function ( e, dt, type, indexes ) {
+             if ( view_mode > 0 )
+                 return;
+
+             current_mask_set_id = 0;
+             var rowData = maskSetsTable.rows( ".selected" ).data().toArray();
+             if ( rowData && rowData.length > 0 ) {
+                 $('#btn_edit').removeAttr("disabled");
+             }else{
+                 $('#btn_edit').attr("disabled", "disabled");
+             }
+         });
+        getAllMaskSets();
+
+        $('#select_labels').change(function(){
+           var submask_id = $(this).val();
+           if ( submask_id == 0 ){
+               $('#textarea_header_columns').html("");
+           }else{
+               for(var i=0;i<designdetailsLabels.length;i++){
+                   if ( designdetailsLabels[i]['id'] == submask_id ){
+                       $('#textarea_header_columns').html(designdetailsLabels[i]['label']);
+                       break;
+                   }
+               }
+           }
+        });
+
+        /////////////////////////
+        adjustControls();
+        $(window).resize(function() {
+             adjustControls();
+        });
+    });
+
+    /* Adjust Control Layout */
+    function adjustControls(){
+        var operation_bar_height = $('#operation_bar').height();
+        var header_height = $('#header_part').height();
+
+        var table_header_height = $('#design_detail_wrapper .dataTables_scrollHead').height();
+		$('#design_detail_wrapper .dataTables_scrollBody').height($(window).height() - table_header_height - operation_bar_height - header_height - 95);
+
+
+		var table_header_height = $('#designs_table_wrapper .dataTables_scrollHead').height();
+		$('#designs_table_wrapper .dataTables_scrollBody').height($(window).height() - table_header_height - operation_bar_height - 100);
+
+		maskSetsTable.columns.adjust().draw();
+    }
+
+
+    /* Get All Mask Sets */
+    function getAllMaskSets(){
+        maskSetsTable.clear().draw();
+        $.ajax({
+            type:'POST',
+            url: "{{ url_for('get_all_mask_sets')}}",
+            processData:false,
+            contentType:false,
+            dataType:"text",
+            success: function(response) {
+                var msg = 'Operation failed.';
+                try{
+                    var data = JSON.parse(response);
+                    if ( data['result'] == 'SUCCESS'){
+                        maskSetsTable.clear().draw();
+                        for(var i=0;i<data['data'].length;i++){
+                            var mask_set = data['data'][i];
+                            var date = new Date(mask_set['date']);
+                            date = date.getFullYear() + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" +  ("0" + date.getDate()).slice(-2);
+
+                            maskSetsTable.rows.add([
+                                {
+                                    "checkbox": '',
+                                    "id": mask_set['id'],
+                                    "block_type_id": mask_set['block_type_id'],
+                                    "active": mask_set['active'],
+                                    "is_maldi": mask_set['is_maldi'],
+                                    "protocol": mask_set['protocol'],
+                                    "supplier": mask_set['supplier'],
+                                    "x_origin": mask_set['x_origin'],
+                                    "y_origin": mask_set['y_origin'],
+                                    "feature_diameter": mask_set['feature_diameter'],
+                                    "x_features": mask_set['x_features'],
+                                    "x_spacing": mask_set['x_spacing'],
+                                    "y_features": mask_set['y_features'],
+                                    "y_spacing": mask_set['y_spacing'],
+                                    "feature_num": mask_set['feature_num'],
+                                    "column_num": mask_set['column_num'],
+                                    "date": date,
+                                    "is_maldi_text": mask_set['is_maldi_text'],
+                                    "active_text": mask_set['active_text'],
+                                    "labels": mask_set['labels']
+                                }
+                            ]);
+                        }
+                        maskSetsTable.draw();
+                        adjustControls();
+                        return;
+                    }else{
+                        msg = data['msg'];
+                    }
+                }catch(error) {
+                    console.log(error);
+                }
+            },
+            error:function(error){
+                console.log(error);
+            }
+        });
+    }
+
+    /* Show Mask Set Detail */
+    function showMaskSetDetail(_data){
+        $('#detail_protocol').val(_data['protocol']);
+        $('#detail_supplier').val(_data['supplier']);
+        $('#detail_block_type').val(_data['block_type_id']);
+        $('#detail_x_origin').val(_data['x_origin']);
+        $('#detail_y_origin').val(_data['y_origin']);
+        $('#detail_feature_diameter').val(_data['feature_diameter']);
+        $('#detail_x_features').val(_data['x_features']);
+        $('#detail_x_spacing').val(_data['x_spacing']);
+        $('#detail_y_features').val(_data['y_features']);
+        $('#detail_y_spacing').val(_data['y_spacing']);
+        if (_data['active'] == 1){
+            $('#detail_active').prop('checked', true);
+        }else{
+            $('#detail_active').prop('checked', false);
+        }
+        if (_data['is_maldi'] == 1){
+            $('#detail_maldi').prop('checked', true);
+        }else{
+            $('#detail_maldi').prop('checked', false);
+        }
+        $.uniform.update();
+    }
+
+    /* Enable Controls */
+    function enableDetailControls(_enable){
+        if ( _enable ){
+            $('#detail_protocol').removeAttr("disabled");
+            $('#detail_supplier').removeAttr("disabled");
+            $('#detail_block_type').removeAttr("disabled");
+            $('#detail_x_origin').removeAttr("disabled");
+            $('#detail_y_origin').removeAttr("disabled");
+            $('#detail_feature_diameter').removeAttr("disabled");
+            $('#detail_x_features').removeAttr("disabled");
+            $('#detail_x_spacing').removeAttr("disabled");
+            $('#detail_y_features').removeAttr("disabled");
+            $('#detail_y_spacing').removeAttr("disabled");
+            $('#detail_file').removeAttr("disabled");
+            $('#detail_active').removeAttr("disabled");
+            $('#detail_maldi').removeAttr("disabled");
+
+        }else{
+            $('#detail_protocol').attr("disabled", "disabled");
+            $('#detail_supplier').attr("disabled", "disabled");
+            $('#detail_block_type').attr("disabled", "disabled");
+            $('#detail_x_origin').attr("disabled", "disabled");
+            $('#detail_y_origin').attr("disabled", "disabled");
+            $('#detail_feature_diameter').attr("disabled", "disabled");
+            $('#detail_x_features').attr("disabled", "disabled");
+            $('#detail_x_spacing').attr("disabled", "disabled");
+            $('#detail_y_features').attr("disabled", "disabled");
+            $('#detail_y_spacing').attr("disabled", "disabled");
+            $('#detail_file').attr("disabled", "disabled");
+            $('#detail_active').attr("disabled", "disabled");
+            $('#detail_maldi').attr("disabled", "disabled");
+        }
+        $.uniform.update();
+    }
+
+    /* Initialize Controls */
+    function initControls(){
+        $('#detail_protocol').val("");
+        $('#detail_supplier').val("HealthTell, Inc");
+        $('#detail_block_type').val(0);
+        $('#detail_x_origin').val("");
+        $('#detail_y_origin').val("");
+        $('#detail_feature_diameter').val("");
+        $('#detail_x_features').val("");
+        $('#detail_x_spacing').val("");
+        $('#detail_y_features').val("");
+        $('#detail_y_spacing').val("")
+        $('#detail_file').val(null);
+        $('#detail_active').prop("checked", true);
+        $('#detail_maldi').prop("checked", false);
+        $.uniform.update();
+    }
+
+
+    /* Clicked Edit Button */
+    function clickedMaskDetailEdit(){
+        if ( current_mask_set_id == 0 )
+            return;
+
+        view_mode = 1;
+        $('#btn_add').addClass("hidden");
+        $('#btn_edit').addClass("hidden");
+        $('#btn_save').removeClass("hidden");
+        $('#btn_cancel').removeClass("hidden");
+        $('#detail_file_wrapper').removeClass("hidden");
+        $('#detail_file').val(null);
+        $('#designs_table').addClass("edit");
+        enableDetailControls(true);
+    }
+
+    /* Clicked Add Button */
+    function clickedMaskDetailAdd(){
+        view_mode = 2;
+
+        $('#btn_add').addClass("hidden");
+        $('#btn_edit').addClass("hidden");
+        $('#btn_save').removeClass("hidden");
+        $('#btn_cancel').removeClass("hidden");
+        $('#detail_file_wrapper').removeClass("hidden");
+        $('#designs_table').addClass("edit");
+
+        maskSetsTable.rows(".selected").deselect();
+        initControls();
+        enableDetailControls(true);
+    }
+
+    /* Clicked Save Button */
+    var design_fd = null;
+    function clickedMaskDetailSave() {
+        if (saving)
+            return;
+
+        var protocol = $('#detail_protocol').val().trim();
+        var supplier = $('#detail_supplier').val().trim();
+        var block_type = $('#detail_block_type').val();
+        var block_type_text = $('#detail_block_type option:selected').text();
+        var x_origin = $('#detail_x_origin').val().trim();
+        var y_origin = $('#detail_y_origin').val().trim();
+        var feature_diameter = $('#detail_feature_diameter').val().trim();
+        var x_features = $('#detail_x_features').val().trim();
+        var x_spacing = $('#detail_x_spacing').val().trim();
+        var y_features = $('#detail_y_features').val().trim();
+        var y_spacing = $('#detail_y_spacing').val().trim();
+        var active = 0;
+        var active_text = 'No';
+        var is_maldi = 0;
+        var is_maldi_text = 'No';
+
+        if ($('#detail_active').is(":checked")) {
+            active = 1;
+            active_text = 'Yes';
+        }
+
+        if ($('#detail_maldi').is(":checked")) {
+            is_maldi = 1;
+            is_maldi_text = 'Yes';
+        }
+
+        var detail_file = $('input[name=detail_file]')[0].files[0];
+
+        if (protocol.length == 0) {
+            $('#footer_modal_alert .modal-text').text("Protocol is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if (supplier.length == 0) {
+            $('#footer_modal_alert .modal-text').text("Supplier is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+
+        if (x_origin.length == 0) {
+            $('#footer_modal_alert .modal-text').text("X Origin is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        } else if (Math.floor(x_origin) != x_origin || $.isNumeric(x_origin) == false) {
+            $('#footer_modal_alert .modal-text').text("X Origin should be integer.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+
+        if (y_origin.length == 0) {
+            $('#footer_modal_alert .modal-text').text("Y Origin is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        } else if (Math.floor(y_origin) != y_origin || $.isNumeric(y_origin) == false) {
+            $('#footer_modal_alert .modal-text').text("Y Origin should be integer.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if (feature_diameter.length == 0) {
+            $('#footer_modal_alert .modal-text').text("Feature Diameter is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        } else if (isNaN(feature_diameter)) {
+            $('#footer_modal_alert .modal-text').text("Feature Diameter should be number.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if (x_features.length == 0) {
+            $('#footer_modal_alert .modal-text').text("X Features is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        } else if (Math.floor(x_features) != x_features || $.isNumeric(x_features) == false) {
+            $('#footer_modal_alert .modal-text').text("X Features should be integer.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if (x_spacing.length == 0) {
+            $('#footer_modal_alert .modal-text').text("X Spacing is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        } else if (isNaN(x_spacing)) {
+            $('#footer_modal_alert .modal-text').text("X Spacing should be number.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if (y_features.length == 0) {
+            $('#footer_modal_alert .modal-text').text("Y Features is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        } else if (Math.floor(y_features) != y_features || $.isNumeric(y_features) == false) {
+            $('#footer_modal_alert .modal-text').text("Y Features should be integer.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if (y_spacing.length == 0) {
+            $('#footer_modal_alert .modal-text').text("Y Spacing is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        } else if (isNaN(y_spacing)) {
+            $('#footer_modal_alert .modal-text').text("Y spacing should be number.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if (view_mode == 1) {
+            if (detail_file) {
+                if (detail_file['type'] != "application/vnd.ms-excel") {
+                    $('#footer_modal_alert .modal-text').text("File format should be CSV.");
+                    $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+                    return;
+                }
+            }
+        }
+        else if (view_mode == 2) {
+            if (detail_file == null) {
+                $('#footer_modal_alert .modal-text').text("CSV file required.");
+                $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+                return;
+            }
+            else if (detail_file['type'] != "application/vnd.ms-excel") {
+                $('#footer_modal_alert .modal-text').text("File format should be CSV.");
+                $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+                return;
+            }
+        }
+
+        design_fd = new FormData();
+        design_fd.append("protocol", protocol);
+        design_fd.append("supplier", supplier);
+        design_fd.append("block_type", block_type);
+        design_fd.append("block_type_text", block_type_text);
+        design_fd.append("x_origin", x_origin);
+        design_fd.append("y_origin", y_origin);
+        design_fd.append("feature_diameter", feature_diameter);
+        design_fd.append("x_features", x_features);
+        design_fd.append("x_spacing", x_spacing);
+        design_fd.append("y_features", y_features);
+        design_fd.append("y_spacing", y_spacing);
+        design_fd.append("active", active);
+        design_fd.append("active_text", active_text);
+        design_fd.append("is_maldi", is_maldi);
+        design_fd.append("is_maldi_text", is_maldi_text);
+
+        if ( detail_file )
+            design_fd.append("file", detail_file);
+
+        if ( view_mode == 1 ){
+            design_fd.append("design_id", current_mask_set_id);
+        }
+
+        if ( view_mode == 1 && detail_file ){
+            var label_ids = "";
+            for(var i=0; i < maskSetsTable.rows().count(); i++ ) {
+                var tmp_object = maskSetsTable.row(i).data();
+                if (tmp_object['id'] == current_mask_set_id) {
+                    label_ids = tmp_object['labels'];
+                    break;
+                }
+            }
+            var str = "<option value='0'>None</option>";
+            if ( label_ids.length > 0 ) {
+                var label_ids_array = label_ids.split(",");
+                for (i = 0; i < label_ids_array.length; i++) {
+                    str += "<option value='" + label_ids_array[i] + "'>Sub masks" + (i + 1) + "</option>";
+                }
+            }
+            $('#select_labels').html(str);
+            $('#textarea_header_columns').html("");
+            $('#modal_confirm_readd_mask').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+        design_fd.append("append", 0);
+        design_fd.append("label_id", 0);
+        doUpdateOrAddDesign();
+    }
+
+    function onClickedAppendMask(){
+        var label_id = $('#select_labels').val();
+
+        $('#modal_confirm_readd_mask').modal('hide');
+        design_fd.append("append", 1);
+        design_fd.append("label_id", label_id);
+        doUpdateOrAddDesign();
+    }
+
+    /* Clicked Yes button on confirm dialog of readd mask */
+    function onClickedReplaceMask(){
+        $('#modal_confirm_readd_mask').modal('hide');
+        design_fd.append("append", 0);
+        design_fd.append("label_id", 0);
+        doUpdateOrAddDesign();
+    }
+
+    /* Clicked No button on confirm dialog of readd mask */
+    function onClickedCancelMask(){
+        $('#modal_confirm_readd_mask').modal('hide');
+    }
+
+    /* Update or Add design */
+    function doUpdateOrAddDesign(){
+        if ( design_fd == null )
+            return;
+
+        saving = true;
+        setProgressBarPercent("#progress_bar", 0);
+        $("#progress_bar").show();
+        if ( view_mode == 1 )  // update design
+        {
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('update_design')}}",
+                processData: false,
+                contentType: false,
+                dataType: "text",
+                data: design_fd,
+                success: function (response) {
+                    saving = false;
+                    var msg = 'Operation failed.';
+                    try {
+                        var data = JSON.parse(response);
+                        if (data['result'] == 'SUCCESS') {
+                            getProcessUpdatingDesign(data['task_status_url'], design_fd);
+                            return;
+                        } else {
+                            msg = data['msg'];
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
+
+                    $('#progress_bar').hide();
+
+                    $('#footer_modal_alert .modal-text').text(msg);
+                    $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+                },
+                error: function (error) {
+                    console.log(error);
+                    $('#progress_bar').hide();
+                }
+            });
+        }
+        else //add design
+        {
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('add_design')}}",
+                processData: false,
+                contentType: false,
+                dataType: "text",
+                data: design_fd,
+                success: function (response) {
+                    saving = false;
+
+                    var msg = 'Operation failed.';
+                    try {
+                        var data = JSON.parse(response);
+                        if (data['result'] == 'SUCCESS') {
+                            getProcessAddingDesign(data['task_status_url'], design_fd);
+                            return;
+                        } else {
+                            msg = data['msg'];
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
+
+                    $('#progress_bar').hide();
+
+                    $('#footer_modal_alert .modal-text').text(msg);
+                    $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+                },
+                error: function (error) {
+                    console.log(error);
+                    $('#progress_bar').hide();
+                }
+            });
+        }
+    }
+
+
+    /* get process of updating design*/
+    function getProcessUpdatingDesign(_url, _fd){
+        $.ajax({
+            type: 'GET',
+            url: _url,
+            processData: false,
+            contentType: false,
+            dataType: "text",
+            success: function (response) {
+                var msg = 'Operation Failed.';
+                try {
+                    var data = JSON.parse(response);
+                    if (data['status'] == 'Processing' || data['status'] == 'Uploading' ) {
+                        if ( data['status'] == 'Uploading' ){
+                            $('#progress_bar .title').html("Uploading:");
+                        }else {
+                            if (data['info'] > 0) {
+                                $('#progress_bar .title').html("Saving Mask Set:");
+                            }else{
+                                $('#progress_bar .title').html("Processing:");
+                            }
+                        }
+                        setProgressBarPercent("#progress_bar", data['info']);
+                        setTimeout(function(){
+                            getProcessUpdatingDesign(_url, _fd);
+                        }, 2000);
+                        return;
+                    }
+                    else if ( data['status'] == 'Done' ) {
+                        setProgressBarPercent("#progress_bar", 100);
+                        setTimeout(function () {
+                            $("#progress_bar").hide();
+                            $('#progress_bar .title').html("Processing:");
+                        }, 500);
+
+
+                        var info_json = data['info'];
+                        var info = JSON.parse(info_json);
+
+                        maskSetsTable.rows(".selected").deselect();
+                        for(var i=0; i < maskSetsTable.rows().count(); i++ ) {
+                            var tmp_object = maskSetsTable.row(i).data();
+                            if ( tmp_object['id'] == current_mask_set_id ){
+
+                                tmp_object['block_type_id'] = _fd.get("block_type");
+                                tmp_object['active'] = _fd.get("active");
+                                tmp_object['protocol'] = _fd.get("protocol");
+                                tmp_object['supplier'] = _fd.get("supplier");
+                                tmp_object['x_origin'] = _fd.get("x_origin");
+                                tmp_object['y_origin'] = _fd.get("y_origin");
+                                tmp_object['feature_diameter'] = _fd.get("feature_diameter");
+                                tmp_object['x_features'] = _fd.get("x_features");
+                                tmp_object['x_spacing'] = _fd.get("x_spacing");
+                                tmp_object['y_features'] = _fd.get("y_features");
+                                tmp_object['y_spacing'] = _fd.get("y_spacing");
+                                tmp_object['active_text'] = _fd.get("active_text");
+                                tmp_object['is_maldi'] = _fd.get("is_maldi");
+                                tmp_object['is_maldi_text'] = _fd.get("is_maldi_text");
+                                tmp_object['feature_num'] = info['feature_num'];
+                                tmp_object['column_num'] = info['column_num'];
+
+                                if ( info['label_id'] > 0 ){
+                                    var tmp_labels = tmp_object['labels'];
+                                    var tmp_labels_array = tmp_labels.split(",");
+                                    var isin = false;
+                                    for(var j=0;j<tmp_labels_array.length;j++){
+                                        if ( tmp_labels_array[j] == info['label_id'] ){
+                                            isin = true;
+                                            break;
+                                        }
+                                    }
+                                    if ( isin == false ) {
+                                        if ( _fd.get("append") == 1 ) {
+                                            tmp_object['labels'] = tmp_object['labels'] + "," + info['label_id'];
+                                        }else{
+                                            tmp_object['labels'] = info['label_id'];
+                                        }
+
+                                        var json_obj = {
+                                            "id": info['label_id'],
+                                            "label": info['label_str'],
+                                            "label_num": info['label_num']
+
+                                        };
+                                        designdetailsLabels.push(json_obj);
+                                    }
+                                }
+
+
+                                maskSetsTable.row(i).select();
+                                maskSetsTable.row(i).data(tmp_object).draw();
+                                break;
+                            }
+                        }
+
+
+
+                        view_mode = 0;
+                        $('#btn_save').addClass("hidden");
+                        $('#btn_cancel').addClass("hidden");
+                        $('#btn_add').removeClass("hidden");
+                        $('#btn_edit').removeClass("hidden");
+                        $('#detail_file_wrapper').addClass("hidden");
+                        $('#designs_table').removeClass("edit");
+
+                        enableDetailControls(false);
+                        return;
+                    } else  {
+                        msg = data['info'];
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+
+                $("#progress_bar").hide();
+                $('#progress_bar .title').html("Processing:");
+
+                $('#footer_modal_alert .modal-text').text(msg);
+                $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            },
+            error: function (error) {
+                $("#progress_bar").hide();
+                $('#progress_bar .title').html("Processing:");
+
+                console.log(error);
+            }
+        });
+    }
+
+    /* get process of adding design*/
+    function getProcessAddingDesign(_url, _fd){
+        $("#progress_bar").show();
+        $.ajax({
+            type: 'GET',
+            url: _url,
+            processData: false,
+            contentType: false,
+            dataType: "text",
+            success: function (response) {
+                var msg = 'Operation Failed.';
+                try {
+                    var data = JSON.parse(response);
+                    if (data['status'] == 'Processing' || data['status'] == 'Uploading') {
+                        if ( data['status'] == 'Uploading' ){
+                            $('#progress_bar .title').html("Uploading:");
+                        }else {
+                            if (data['info'] > 0) {
+                                $('#progress_bar .title').html("Saving Mask Set:");
+                            }else{
+                                $('#progress_bar .title').html("Processing:");
+                            }
+                        }
+                        setProgressBarPercent("#progress_bar", data['info']);
+                        setTimeout(function(){
+                            getProcessAddingDesign(_url, _fd);
+                        }, 2000);
+                        return;
+                    } else if ( data['status'] == 'Done' ) {
+                        setProgressBarPercent("#progress_bar", 100);
+                        setTimeout(function () {
+                            $("#progress_bar").hide();
+                            $('#progress_bar .title').html("Processing:");
+                        }, 500);
+
+                        var info_json = data['info'];
+                        var info = JSON.parse(info_json);
+
+                        current_mask_set_id = info['id'];
+                        var date = new Date(info['date']);
+                        date = date.getFullYear() + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" +  ("0" + date.getDate()).slice(-2);
+
+                        view_mode = 0;
+                        $('#btn_save').addClass("hidden");
+                        $('#btn_cancel').addClass("hidden");
+                        $('#btn_add').removeClass("hidden");
+                        $('#btn_edit').removeClass("hidden");
+                        $('#detail_file_wrapper').addClass("hidden");
+                        $('#designs_table').removeClass("edit");
+
+                        enableDetailControls(false);
+
+                        maskSetsTable.rows.add([
+                        {
+                            "id": current_mask_set_id,
+                            "block_type_id": _fd.get("block_type"),
+                            "active": _fd.get("active"),
+                            "protocol": _fd.get("protocol"),
+                            "supplier": _fd.get("supplier"),
+                            "x_origin": _fd.get("x_origin"),
+                            "y_origin": _fd.get("y_origin"),
+                            "feature_diameter": _fd.get("feature_diameter"),
+                            "x_features": _fd.get("x_features"),
+                            "x_spacing": _fd.get("x_spacing"),
+                            "y_features": _fd.get("y_features"),
+                            "y_spacing": _fd.get("y_spacing"),
+                            "feature_num": info['feature_num'],
+                            "column_num": info['column_num'],
+                            "date": date,
+                            "active_text": _fd.get("active_text"),
+                            "is_maldi": _fd.get("is_maldi"),
+                            "is_maldi_text": _fd.get("is_maldi_text"),
+                            "labels": info['label_id']
+                        }
+                        ]).select().draw();
+
+                        var json_obj = {
+                            "id": info['label_id'],
+                            "label": info['label_str'],
+                            "label_num": info['label_num']
+
+                        };
+                        designdetailsLabels.push(json_obj);
+                        return;
+                    } else  {
+                        msg = data['info'];
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+
+                $("#progress_bar").hide();
+                $('#progress_bar .title').html("Processing:");
+
+                $('#footer_modal_alert .modal-text').text(msg);
+                $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            },
+            error: function (error) {
+                $("#progress_bar").hide();
+                $('#progress_bar .title').html("Processing:");
+                console.log(error);
+            }
+        });
+    }
+
+    /* Clicked Cancel Button */
+    function clickedMaskDetailCancel(){
+        view_mode = 0;
+        maskSetsTable.rows(".selected").deselect();
+        initControls();
+        enableDetailControls(false);
+        $('#btn_add').removeClass("hidden");
+        $('#btn_edit').removeClass("hidden");
+        $('#btn_edit').attr("disabled", "disabled");
+        $('#btn_save').addClass("hidden");
+        $('#btn_cancel').addClass("hidden");
+        $('#detail_file_wrapper').addClass("hidden");
+        $('#designs_table').removeClass("edit");
+    }
+
+    /* show confirm dialog for deleting selected designs */
+    function deleteIfExistSelectedDesigns(){
+        if ( view_mode != 1 || current_mask_set_id <= 0)
+            return;
+
+        $('#modal_confirm_delete').modal({backdrop: 'static', keyboard: false});
+    }
+
+    /* clicked yes button on confirm dialog of deleting design */
+    function onClickedConfirmDelete(){
+        $('#modal_confirm_delete').modal('hide');
+
+        var fd=new FormData();
+        fd.append("design_id", current_mask_set_id);
+
+
+        setProgressBarPercent("#progress_bar", 0);
+        $('#progress_bar').show();
+
+        $.ajax({
+            type: 'POST',
+            url: "{{ url_for('delete_design')}}",
+            processData: false,
+            contentType: false,
+            dataType: "text",
+            data: fd,
+            success: function (response) {
+                var msg = 'Operation Failed.';
+                try {
+                    var data = JSON.parse(response);
+                    if (data['result'] == 'SUCCESS') {
+                        setProgressBarPercent("#progress_bar", 100);
+                        setTimeout(function(){
+                            $('#progress_bar').hide();
+                        }, 500);
+
+                        var row_count = maskSetsTable.rows().count();
+                        for(var i=0;i<row_count;i++) {
+                            var rowdata = maskSetsTable.row(i).data();
+                            if ( rowdata['id'] == current_mask_set_id ){
+                                maskSetsTable.row(i).remove().draw();
+                                break;
+                            }
+                        }
+                        clickedMaskDetailCancel();
+                        return;
+                    } else {
+                        msg = data['msg'];
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+
+                $('#progress_bar').hide();
+                $('#footer_modal_alert .modal-text').text(msg);
+                $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            },
+            error: function (error) {
+                $('#progress_bar').hide();
+                console.log(error);
+            }
+        });
+    }
+
+    /* clicked no button on confirm dialog of deleting design */
+    function onClickedCancelDelete(){
+        $('#modal_confirm_delete').modal('hide');
+    }
+
+    var cur_label_info = null;
+
+    /* show label dialog */
+    function showLabelDialogForSelectedDesign(){
+        if ( view_mode != 1 || current_mask_set_id <= 0)
+            return;
+
+        $('#modal_design_label_error').html("");
+        $('#modal_design_label .body').html("");
+        $('#modal_design_label .title').hide();
+        $('#modal_design_label .buttons').hide();
+        $('#modal_design_label .loader').attr("style", "top:30%;display:block !important");
+
+        $('#modal_design_label').modal({backdrop: 'static', keyboard: false});
+
+
+        var fd=new FormData();
+        fd.append("design_id", current_mask_set_id);
+        $.ajax({
+            type: 'POST',
+            url: "{{ url_for('get_labels')}}",
+            processData: false,
+            contentType: false,
+            dataType: "text",
+            data: fd,
+            success: function (response) {
+                $('#modal_design_label .title').show();
+                $('#modal_design_label .buttons').show();
+                $('#modal_design_label .loader').attr("style", "display:none !important");
+
+                var msg = "Couldn't fetch labels.";
+                try {
+                    var data = JSON.parse(response);
+                    if (data['result'] == 'SUCCESS') {
+                        $('#btn_confirm_label').removeAttr("disabled");
+                        $('#modal_design_label .body').html("");
+
+                        cur_label_info = data['data'];
+
+                        var active_index = 0;
+                        var label_count = data['data'].length;
+                        var str = "<ul class='nav nav-tabs'>";
+                        for(var i=0;i<label_count;i++){
+                            str += "<li class='";
+                            if ( i == active_index )
+                                str += 'active';
+                            str+="'><a href='#label_tab_" + data['data'][i]['label_id'] + "' data-toggle='tab'><span>Headers for Sub masks " + (i+1) + "</span></a></li>";
+                        }
+                        str+= "</ul>";
+
+
+                        str+= "<div class='tab-content' style='max-height:400px;'>";
+                        for (i = 0; i < label_count; i++) {
+                            str += "<div id='label_tab_" + data['data'][i]['label_id'] + "' class='tab-pane";
+                            if (i == active_index)
+                                str += " active";
+                            str += "'>";
+
+                            var label_array = data['data'][i]['label'].split(",");
+                            var first_row_count = Math.floor(label_array.length/2);
+
+                            for(var k=0;k<2;k++) {
+                                var loop_start = 0;
+                                var loop_end = 0;
+
+                                if (k == 0) {
+                                    loop_start = 0;
+                                    loop_end = first_row_count;
+                                }
+                                else {
+                                    loop_start = first_row_count;
+                                    loop_end = label_array.length;
+                                }
+
+                                str += "<div class='span6'>";
+                                for (var j = loop_start; j < loop_end; j++) {
+                                    str += '<div class="row-fluid">';
+                                    str +=      '<div class="span5 control-label">Mask ' + (j + 1) + ':</div>';
+                                    str +=      '<div class="span7 text-left">';
+                                    str +=          '<input id="label_value_' + data['data'][i]['label_id'] + '_' + j +  '" type="text" class="form-control" value="' + label_array[j] + '">';
+                                    str +=      '</div>';
+                                    str += '</div>';
+                                }
+                                str += "</div>";
+                            }
+
+                            str += "</div>";
+                        }
+                        str+= "</div>";
+                        $('#modal_design_label .body').html(str);
+
+                        $("input[type='text'], textarea").attr('spellcheck',false);
+                        return;
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+                $('#modal_design_label .body').html(msg);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    /* clicked confirm button on label edit dialog */
+    function onClickedConfirmLabelDialog(){
+        if ( cur_label_info == null )
+            return;
+
+        var result = [];
+        for(var i=0;i<cur_label_info.length;i++){
+            var label_id = cur_label_info[i]['label_id'];
+            var label_num = cur_label_info[i]['label_num'];
+
+            var tmp = "";
+            for(var j=0;j<label_num;j++) {
+                var value = $('#label_value_' + label_id + '_' + j).val().trim();
+                if ( value.length == 0 ){
+                    $('#modal_design_label_error').html("Labels should not be emptpy!");
+                    return;
+                }
+
+                if ( value.indexOf(",") != -1 ){
+                    $('#modal_design_label_error').html("Labels should not contain ','");
+                    return;
+                }
+                if ( tmp == "" )
+                    tmp = value;
+                else
+                    tmp += "," + value;
+            }
+            var json_obj = {
+                'label_id':label_id,
+                'label': tmp
+            }
+            result.push(json_obj);
+        }
+
+
+        var fd=new FormData();
+        fd.append("value", JSON.stringify(result));
+        $.ajax({
+            type: 'POST',
+            url: "{{ url_for('set_labels')}}",
+            processData: false,
+            contentType: false,
+            dataType: "text",
+            data: fd,
+            success: function (response) {
+                var msg = "Operation failed.";
+                try {
+                    var data = JSON.parse(response);
+                    if (data['result'] == 'SUCCESS') {
+                        $('#modal_design_label').modal('hide');
+                    }else{
+                        msg = data['msg'];
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+                $('#modal_design_label_error').html(msg);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+
+    /* clicked cancel button on label edit dialog */
+    function onClickedCancelLabelDialog(){
+        $('#modal_design_label').modal('hide');
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /* Enable controls */
+    function enableControls(_enable){
+        if ( _enable ){
+            $('#protocol').removeAttr("disabled");
+            $('#supplier').removeAttr("disabled");
+            $('#block_type').removeAttr("disabled");
+            $('#x_origin').removeAttr("disabled");
+            $('#y_origin').removeAttr("disabled");
+            $('#feature_diameter').removeAttr("disabled");
+            $('#x_features').removeAttr("disabled");
+            $('#x_spacing').removeAttr("disabled");
+            $('#y_features').removeAttr("disabled");
+            $('#y_spacing').removeAttr("disabled");
+            $('#active').removeAttr("disabled");
+        }else{
+            $('#protocol').attr("disabled", "disabled");
+            $('#supplier').attr("disabled", "disabled");
+            $('#block_type').attr("disabled", "disabled");
+            $('#x_origin').attr("disabled", "disabled");
+            $('#y_origin').attr("disabled", "disabled");
+            $('#feature_diameter').attr("disabled", "disabled");
+            $('#x_features').attr("disabled", "disabled");
+            $('#x_spacing').attr("disabled", "disabled");
+            $('#y_features').attr("disabled", "disabled");
+            $('#y_spacing').attr("disabled", "disabled");
+            $('#active').attr("disabled", "disabled");
+        }
+    }
+
+    /* Get All Designs for lookup*/
+    function getLookup(){
+        lookupTable.clear().draw();
+        $.ajax({
+            type:'POST',
+            url: "{{ url_for('get_designs')}}",
+            processData:false,
+            contentType:false,
+            dataType:"text",
+            success: function(response) {
+                var msg = 'Operation failed.';
+                try{
+                    var data = JSON.parse(response);
+                    if ( data['result'] == 'SUCCESS'){
+                        lookupTable.clear().draw();
+                        for(var i=0;i<data['data'].length;i++){
+                            var design = data['data'][i];
+                            var date = new Date(design['date']);
+                            date = date.getFullYear() + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" +  ("0" + date.getDate()).slice(-2) + " " + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2);
+
+                            lookupTable.rows.add([
+                                {
+                                    "id": design['id'],
+                                    "protocol": design['protocol'],
+                                    "date": date,
+                                }
+                            ]);
+                        }
+                        lookupTable.draw();
+                        adjustControls();
+                        return;
+                    }else{
+                        msg = data['msg'];
+                    }
+                }catch(error) {
+                    console.log(error);
+                }
+            },
+            error:function(error){
+                console.log(error);
+            }
+        });
+    }
+
+    /* Clicked Lookup button */
+    function clickedLookup(){
+        $('#modal_lookup_designs').modal();
+        setTimeout(function(){
+            lookupTable.columns.adjust().draw();
+        }, 300);
+    }
+
+    /* Selected a design from lookup table */
+    function onClickedSelectDesign(){
+        var selectedRow = lookupTable.row('.selected');
+        if (selectedRow.length == 0)
+            return;
+        var data = selectedRow.data();
+        var design_id = data['id'];
+
+        $('#modal_lookup_designs').modal('hide');
+
+        $('#header_part').removeClass("hidden");
+        $('#detail_part').removeClass("hidden");
+        getDesignDetail(design_id, 1);
+    }
+
+    /* Cancel lookup modal */
+    function onClickedCancelDesign(){
+        $('#modal_lookup_designs').modal('hide');
+    }
+
+    /* Get Design Detail */
+    function getDesignDetail(design_id, b_get_detail){
+        $(".se-pre-con").fadeIn("fast");
+        var fd=new FormData();
+        fd.append("design_id", design_id);
+        fd.append("b_get_detail", b_get_detail);
+        $.ajax({
+            type: 'POST',
+            url: "{{ url_for('get_design_detail')}}",
+            processData: false,
+            contentType: false,
+            dataType: "text",
+            data: fd,
+            success: function (response) {
+                var msg = 'Operation Failed.';
+                try {
+                    var data = JSON.parse(response);
+                    if (data['result'] == 'SUCCESS') {
+                        current_design_id = design_id;
+                        showDesignDetail(data['data'], b_get_detail);
+
+                        $(".se-pre-con").fadeOut("slow");
+                        return;
+                    } else {
+                        msg = data['msg'];
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+                $(".se-pre-con").fadeOut("slow");
+                $('#footer_modal_alert .modal-text').text(msg);
+                $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    /* Show Design Data */
+    function showDesignDetail(data, b_get_detail){
+        $('#header_title').html("Design: " + data['protocol']);
+        $('#protocol').val(data['protocol']);
+        $('#supplier').val(data['supplier']);
+        $('#block_type').val(data['block_type_id']);
+        $('#x_origin').val(data['x_origin']);
+        $('#y_origin').val(data['y_origin']);
+        $('#feature_diameter').val(data['feature_diameter']);
+        $('#x_features').val(data['x_features']);
+        $('#x_spacing').val(data['x_spacing']);
+        $('#y_features').val(data['y_features']);
+        $('#y_spacing').val(data['y_spacing']);
+        $('#active').val(data['active']);
+
+
+        if ( b_get_detail == 1 ) {
+            destroyDesignDetailTable();
+
+            var str = "<thead><td>Col</td><td>Row</td><td>Feature</td>";
+            for(var i=0;i<data['mask_num'];i++){
+                str += "<td>" + (i + 1) + "</td>";
+            }
+            str += "</thead>";
+
+            str += "<tbody>";
+            str += "</tbody>";
+
+            designDetailData = [];
+            if ( data['detail'] ) {
+                for (var i = 0; i < data['detail'].length; i++) {
+                    var item = data['detail'][i];
+
+                    var tmp = [];
+                    tmp.push(item['col']);
+                    tmp.push(item['row']);
+                    tmp.push(item['feature']);
+
+                    var mask_array = item['mask'].split(",");
+                    for (var j = 0; j < data['mask_num']; j++) {
+                        if (mask_array.length > j) {
+                            tmp.push(mask_array[j]);
+                        }else{
+                            tmp.push("");
+                        }
+                    }
+                    designDetailData.push(tmp);
+                }
+            }
+
+
+            $('#design_detail').html(str);
+            designDetailTable = $('#design_detail').DataTable({
+                data:designDetailData,
+                deferRender:true,
+                scrollY:400,
+                scrollCollapse:true,
+                scroller:true,
+                searching:false,
+                bInfo:false,
+                ordering:false,
+                scrollX:false
+            });
+            adjustControls();
+        }
+    }
+
+    /* Switch to edit mode */
+    function clickedEdit(){
+        if ( current_design_id == 0 )
+            return;
+
+        view_mode = 1;
+        $('#btn_lookup').addClass("hidden");
+        $('#btn_add').addClass("hidden");
+        $('#btn_edit').addClass("hidden");
+        $('#btn_save').removeClass("hidden");
+        $('#btn_cancel').removeClass("hidden");
+        $('#third_column').removeClass("hidden");
+        $('#file_details').val(null);
+        enableControls(true);
+    }
+
+    /* Save changes */
+    function clickedSave(){
+        if ( saving )
+            return;
+
+        var protocol = $('#protocol').val().trim();
+        var supplier = $('#supplier').val().trim();
+        var block_type = $('#block_type').val();
+        var x_origin = $('#x_origin').val().trim();
+        var y_origin = $('#y_origin').val().trim();
+        var feature_diameter = $('#feature_diameter').val().trim();
+        var x_features = $('#x_features').val().trim();
+        var x_spacing = $('#x_spacing').val().trim();
+        var y_features = $('#y_features').val().trim();
+        var y_spacing = $('#y_spacing').val().trim();
+        var active = $('#active').val();
+        var detail_file = $('input[name=file_details]')[0].files[0];
+
+        if ( protocol.length == 0 ){
+            $('#footer_modal_alert .modal-text').text("Protocol is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if ( supplier.length == 0){
+            $('#footer_modal_alert .modal-text').text("Supplier is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+
+        if ( x_origin.length == 0){
+            $('#footer_modal_alert .modal-text').text("X Origin is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }else if ( Math.floor(x_origin) != x_origin || $.isNumeric(x_origin) == false ){
+            $('#footer_modal_alert .modal-text').text("X Origin should be integer.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+
+        if ( y_origin.length == 0){
+            $('#footer_modal_alert .modal-text').text("Y Origin is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }else if ( Math.floor(y_origin) != y_origin || $.isNumeric(y_origin) == false ){
+            $('#footer_modal_alert .modal-text').text("Y Origin should be integer.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if ( feature_diameter.length == 0){
+            $('#footer_modal_alert .modal-text').text("Feature Diameter is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }else if ( isNaN(feature_diameter) ){
+            $('#footer_modal_alert .modal-text').text("Feature Diameter should be number.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if ( x_features.length == 0){
+            $('#footer_modal_alert .modal-text').text("X Features is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }else if ( Math.floor(x_features) != x_features || $.isNumeric(x_features) == false ){
+            $('#footer_modal_alert .modal-text').text("X Features should be integer.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if ( x_spacing.length == 0){
+            $('#footer_modal_alert .modal-text').text("X Spacing is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }else if ( isNaN(x_spacing)){
+            $('#footer_modal_alert .modal-text').text("X Spacing should be number.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if ( y_features.length == 0){
+            $('#footer_modal_alert .modal-text').text("Y Features is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }else if ( Math.floor(y_features) != y_features || $.isNumeric(y_features) == false ){
+            $('#footer_modal_alert .modal-text').text("Y Features should be integer.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if ( y_spacing.length == 0){
+            $('#footer_modal_alert .modal-text').text("Y Spacing is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }else if ( isNaN(y_spacing)){
+            $('#footer_modal_alert .modal-text').text("Y spacing should be number.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if ( view_mode == 1){
+            if ( detail_file ){
+                if ( detail_file['type'] != "application/vnd.ms-excel" ) {
+                    $('#footer_modal_alert .modal-text').text("File format should be CSV.");
+                    $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+                    return;
+                }
+            }
+        }
+        else if ( view_mode == 2){
+            if ( detail_file == null ) {
+                $('#footer_modal_alert .modal-text').text("CSV file required.");
+                $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+                return;
+            }
+            else if ( detail_file['type'] != "application/vnd.ms-excel" ) {
+                $('#footer_modal_alert .modal-text').text("File format should be CSV.");
+                $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+                return;
+            }
+        }
+
+        var fd=new FormData();
+        fd.append("protocol", protocol);
+        fd.append("supplier", supplier);
+        fd.append("block_type", block_type);
+        fd.append("x_origin", x_origin);
+        fd.append("y_origin", y_origin);
+        fd.append("feature_diameter", feature_diameter);
+        fd.append("x_features", x_features);
+        fd.append("x_spacing", x_spacing);
+        fd.append("y_features", y_features);
+        fd.append("y_spacing", y_spacing);
+        fd.append("active", active);
+
+        if ( detail_file )
+            fd.append("file", detail_file);
+
+        if ( view_mode == 1 ){
+            fd.append("design_id", current_design_id);
+        }
+
+        saving = true;
+
+        $(".se-pre-con").fadeIn("fast");
+        if ( view_mode == 1 ) {
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('update_design')}}",
+                processData: false,
+                contentType: false,
+                dataType: "text",
+                data: fd,
+                async: true,
+                success: function (response) {
+                    saving = false;
+                    $(".se-pre-con").fadeOut("slow");
+                    var msg = 'Operation failed.';
+                    try {
+                        var data = JSON.parse(response);
+                        if (data['result'] == 'SUCCESS') {
+                            $('#btn_lookup').removeClass("hidden");
+                            $('#btn_add').removeClass("hidden");
+                            $('#btn_edit').removeClass("hidden");
+
+                            $('#btn_save').addClass("hidden");
+                            $('#btn_cancel').addClass("hidden");
+                            $('#third_column').addClass("hidden");
+                            enableControls(false);
+                            if ( detail_file && detail_file.length > 0){
+                                getDesignDetail(current_design_id, 1);
+                            }
+                            return;
+                        } else {
+                            msg = data['msg'];
+                        }
+                    } catch (error) {
+                        console.log("response", response);
+                        console.log(error);
+                    }
+                    $('#footer_modal_alert .modal-text').text(msg);
+                    $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+                },
+                error: function (error) {
+                    saving = false;
+                    $(".se-pre-con").fadeOut("slow");
+
+                    console.log(error);
+                    $('#footer_modal_alert .modal-text').text("Server Error!");
+                    $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+                }
+            });
+        }
+        else{
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('add_design')}}",
+                processData: false,
+                contentType: false,
+                dataType: "text",
+                data: fd,
+                async: true,
+                success: function (response) {
+                    saving = false;
+                    $(".se-pre-con").fadeOut("slow");
+                    var msg = 'Operation failed.';
+                    try {
+                        var data = JSON.parse(response);
+                        if (data['result'] == 'SUCCESS') {
+                            current_design_id = data['id'];
+
+                            $('#third_column').addClass("hidden");
+                            $('#btn_save').addClass("hidden");
+                            $('#btn_cancel').addClass("hidden");
+                            $('#btn_lookup').removeClass("hidden");
+                            $('#btn_add').removeClass("hidden");
+                            $('#btn_edit').removeClass("hidden");
+
+                            enableControls(false);
+                            getLookup();
+                            getDesignDetail(current_design_id, 1);
+
+                            return;
+                        } else {
+                            msg = data['msg'];
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
+                    $('#footer_modal_alert .modal-text').text(msg);
+                    $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+                },
+                error: function (error) {
+                    console.log(error);
+
+                    saving = false;
+                    $(".se-pre-con").fadeOut("slow");
+
+                    $('#footer_modal_alert .modal-text').text("Server Error!");
+                    $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+                }
+            });
+        }
+    }
+
+    /* Cancel changes */
+    function clickedCancel(){
+
+        enableControls(false);
+        $('#btn_save').addClass("hidden");
+        $('#btn_cancel').addClass("hidden");
+        $('#btn_lookup').removeClass("hidden");
+        $('#btn_add').removeClass("hidden");
+        $('#btn_edit').removeClass("hidden");
+        $('#third_column').addClass("hidden");
+
+
+        if ( view_mode == 1 ) {
+            getDesignDetail(current_design_id, 0);
+        }else{
+            getDesignDetail(current_design_id, 1);
+        }
+
+        view_mode = 0;
+    }
+
+
+    /* Clicked add button */
+    function clickedAdd(){
+        view_mode = 2;
+
+        $('#btn_lookup').addClass("hidden");
+        $('#btn_add').addClass("hidden");
+        $('#btn_edit').addClass("hidden");
+        $('#btn_save').removeClass("hidden");
+        $('#btn_cancel').removeClass("hidden");
+        $('#third_column').removeClass("hidden");
+
+        enableControls(true);
+
+        $('#header_title').html("Design Data");
+        $('#protocol').val("");
+        $('#supplier').val("");
+        $('#block_type').val(0);
+        $('#x_origin').val("");
+        $('#y_origin').val("");
+        $('#feature_diameter').val("");
+        $('#x_features').val("");
+        $('#x_spacing').val("");
+        $('#y_features').val("");
+        $('#y_spacing').val("");
+        $('#file_details').val(null);
+        $('#active').val(1);
+
+        destroyDesignDetailTable();
+        $('#design_detail').html("");
+    }
+
+
+    function destroyDesignDetailTable(){
+        if ( designDetailTable ){
+            designDetailTable.destroy();
+            designDetailTable = null;
+        }
+        designDetailData = [];
+    }
+
+    /* collapse header part */
+    function onClickedTopCollapse(){
+        if ( $('#btn_design_header_accordian').hasClass('icon-chevron-up') ){
+            $('#btn_design_header_accordian').removeClass('icon-chevron-up').addClass('icon-chevron-right');
+            $('#header_title').removeClass("hidden");
+
+            $('#header_part_content').slideUp(100, function() {
+                 adjustControls();
+            });
+        }
+        else{
+            $('#btn_design_header_accordian').removeClass('icon-chevron-right').addClass('icon-chevron-up');
+            $('#header_title').addClass("hidden");
+
+            $('#header_part_content').slideDown(100, function() {
+                 adjustControls();
+            });
+        }
+    }
+</script>

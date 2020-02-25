@@ -1,0 +1,1840 @@
+{% include "layout/header.html" %}
+{% include "layout/nav.html" %}
+
+
+<input class="dot-object" title="">
+<input type="password" class="dot-object" title="">
+
+<div id="operation_bar" class="row-fluid marB-10 text-right">
+    <div class="inline-block floatL">
+        <input id="active_toogle" type="checkbox" checked data-toggle="toogle" data-on="Active" data-off="Inactive" data-size="mini" data-width="70" data-height="22"  style="display:none;">
+    </div>
+    {% if  g.user.recipe_editor == -1 %}
+    <button id="btn_add" class="btn btn-primary" onclick="clickedRecipeAdd();"><i class="icon-plus-sign icon-white"></i> Add</button>
+    {% endif %}
+
+    <button id="btn_edit" class="btn btn-primary" onclick="clickedRecipeEdit();" disabled><i class="icon-pencil icon-white"></i> Edit</button>
+    <button id="btn_delete" class="btn btn-primary" onclick="clickedRecipeDelete();" disabled><i class="icon-trash icon-white" ></i> Delete</button>
+
+    <button id="btn_download" class="btn btn-primary" onclick="clickedRecipeGalDownload();" disabled><i class="icon-download-alt icon-white"></i> Download</button>
+    <button id="btn_save" class="btn btn-success hidden" onclick="clickedRecipeSave();"><i class="icon-check icon-white"></i> Save</button>
+    <button id="btn_cancel" class="btn btn-warning hidden" onclick="clickedRecipeCancel();"><i class="icon-remove-sign icon-white"></i> Cancel</button>
+</div>
+
+<div class="row-fluid">
+    <div class="span4">
+        <table id="recipes_table" class="table table-bordered" cellpadding="0" cellspacing="0">
+            <thead>
+                <th></th>
+                <th hidden>id</th>
+                <th hidden>designid</th>
+                <th hidden>userid</th>
+                <th>Recipe Name</th>
+                <th>Design</th>
+                <th hidden>Supplier</th>
+                <th hidden>Block Type</th>
+                <th hidden>X Origin</th>
+                <th hidden>Y Origin</th>
+                <th hidden>Feature Diameter</th>
+                <th hidden>X Features</th>
+                <th hidden>X Spacing</th>
+                <th hidden>Y Features</th>
+                <th hidden>Y Spacing</th>
+                <th hidden>Mask List</th>
+                <th>Date</th>
+                <th hidden>Mask Num</th>
+                <th hidden>Notes</th>
+                <th hidden>ActiveID</th>
+                <th>Active</th>
+                <th hidden>Protection</th>
+                <th hidden>Spacer</th>
+                <th hidden>Standard</th>
+            </thead>
+        </table>
+    </div>
+
+    <div class="span8">
+        <div class="row-fluid block">
+            <div class="header">
+                <div class="title">
+                    Recipe Details
+                </div>
+            </div>
+
+            <div class="clear"></div>
+            <div id="recipe_detail_content_wrapper" class="span12 content marL-0 padB-10 scroll-y">
+                <div class="span6">
+                    <div class="row-fluid marT-10">
+                        <div class="span5 control-label">Recipe Name:</div>
+                        <div class="span7">
+                            <input id="detail_recipe_name" class="form-control" type="text" disabled>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid marT-10 hidden">
+                        <div class="span5 control-label">User:</div>
+                        <div class="span7">
+                            <select id="detail_user" class="form-control width-100" disabled>
+                                {% for user in users %}
+                                    <option value="{{ user.id }}">{{ user.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid marT-10">
+                        <div class="span5 control-label">Mask Set:</div>
+                        <div class="span7">
+                            <select id="detail_design" class="form-control width-100" disabled>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid marT-10">
+                        <div class="span5 control-label">Supplier:</div>
+                        <div class="span7">
+                            <input id="detail_supplier" class="form-control" type="text" disabled>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid marT-10">
+                        <div class="span5 control-label">Block Type:</div>
+                        <div class="span7">
+                            <select id="detail_block_type" class="form-control width-100" disabled>
+                                {% for blocktype in blocktypes %}
+                                    <option value="{{ blocktype.id }}">{{ blocktype.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid marT-10">
+                        <div class="span5 control-label">X Origin:</div>
+                        <div class="span2">
+                            <input id="detail_x_origin" class="form-control" type="text" disabled>
+                        </div>
+                        <div class="span5">
+                            <div class="row-fluid">
+                                <div class="span7 control-label">Y Origin:</div>
+                                <div class="span5">
+                                    <input id="detail_y_origin" class="form-control" type="text" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="row-fluid marT-10">
+                        <div class="span5 control-label">Feature Diameter:</div>
+                        <div class="span7">
+                            <input id="detail_feature_diameter" class="form-control" type="text" disabled>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid marT-10">
+                        <div class="span5 control-label">X Features:</div>
+                        <div class="span2">
+                            <input id="detail_x_features" class="form-control" type="text" disabled>
+                        </div>
+                        <div class="span5">
+                            <div class="row-fluid">
+                                <div class="span7 control-label">X Spacing:</div>
+                                <div class="span5">
+                                    <input id="detail_x_spacing" class="form-control" type="text" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="row-fluid marT-10">
+                        <div class="span5 control-label">Y Features:</div>
+                        <div class="span2">
+                            <input id="detail_y_features" class="form-control" type="text" disabled>
+                        </div>
+                        <div class="span5">
+                            <div class="row-fluid">
+                                <div class="span7 control-label">Y Spacing:</div>
+                                <div class="span5">
+                                    <input id="detail_y_spacing" class="form-control" type="text" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid marT-10">
+                        <div class="span5 control-label">Protection:</div>
+                        <div class="span7">
+                            <select id="detail_protection" class="form-control width-100" disabled>
+                                <option value="0">False</option>
+                                <option value="1">True</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid marT-10">
+                        <div class="span5 control-label">Spacer:</div>
+                        <div class="span7">
+                            <select id="detail_spacer" class="form-control width-100" disabled>
+                                <option value="0">SCL Linker (982.43)</option>
+                                <option value="1">DKP Linker (798.34)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid marT-10">
+                        <div class="span5 control-label">Standard:</div>
+                        <div class="span7">
+                            <select id="detail_standard" class="form-control width-100" disabled>
+                                <option value="0">PEG12 (560.36)</option>
+                                <option value="1">PEG36 (1616.99)</option>
+                                <option value="2">PEG48 (2145.31)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row-fluid marT-10">
+                        <div class="span5 control-label">Notes:</div>
+                        <div class="span7">
+                            <textarea id="detail_notes" class="form-control" disabled></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="span6 marL-0">
+                    <div class="row-fluid marT-10">
+                        <div class="span4 control-label"># of Cycles:</div>
+                        <div class="span3">
+                            <input id="detail_amino_count" type="text" class="form-control" disabled>
+                        </div>
+                        <div class="span2">
+                            <button id="btn_apply_count" class="btn btn-primary" onclick="onClickedApplyCount();" disabled>Apply</button>
+                        </div>
+
+                        <div class="span3">
+                            <div id="detail_active_wrapper" class="row-fluid">
+                                <div class="span6 control-label">Active:</div>
+                                <div class="span6 padT-3">
+                                    <input id="detail_active" class="uniform_on" type="checkbox" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row-fluid marT-10">
+                        <div class="span1"></div>
+                        <div class="span11 control-label text-center">Mask Set</div>
+                        <div class="span1"></div>
+                        <div class="span11 marL-0">
+                            <table id="detail_mask_set_table" class="table table-bordered mask-build" cellpadding="0" cellspacing="0" width="100%">
+                                <thead>
+                                    <th></th>
+                                    <th>Cycle</th>
+                                    <th>Mask</th>
+                                    <th>Amino</th>
+                                    <th hidden>LabelID</th>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div class="span12 text-center">
+                            <button id="btn_add_mask" class="btn btn-primary marT-5" onclick="onClickedAddMaskSet();" disabled>Add</button>
+                            <button id="btn_delete_mask" class="btn btn-primary marT-5" onclick="onClickedDeleteMaskSet();" disabled>Delete</button>
+                        </div>
+                    </div>
+
+
+                    <div id="detail_gal_header_wrapper" class="row-fluid marT-30">
+                        <div class="span1"></div>
+                        <div class="span11 control-label text-center">Gal Header</div>
+                        <div class="span1"></div>
+                        <div class="span11 marL-0">
+                            <textarea id="detail_gal_header" class="form-control back-white-disabled" disabled rows="12" readonly></textarea>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="clear"></div>
+                <div class="span10">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% include "layout/footer.html" %}
+<div class="se-pre-con" style="display:none;">
+    <div class="loader inline-block">
+    </div>
+    <p class="text_loader" style="display:none;">Processing...</p>
+</div>
+
+<div id="progress_bar" class="simple-progressbar-wrapper" style="display:none">
+    <div class="box">
+        <div class="title">Processing:</div>
+        <div class="simple-progressbar">
+            <div class="bar"></div>
+            <div class="text"></div>
+        </div>
+    </div>
+</div>
+
+
+<div id="modal_confirm_delete" class="modal fade design-modal"  style="display: none;width:400px;margin-left:-200px;">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+                <div class="row-fluid title">
+                    Are you sure you want to delete the current recipe?
+                </div>
+
+                <div class="row-fluid buttons">
+                    <div class="button left" onclick="onClickedConfirmDeleteRecipe();">Yes</div>
+                    <div class="button right marL-10" onclick="onClickedCancelDeleteRecipe();">No</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="modal_confirm_apply_cycles" class="modal fade design-modal"  style="display: none;width:400px;margin-left:-200px;">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+                <div class="row-fluid title">
+                </div>
+
+                <div class="row-fluid buttons">
+                    <div class="button left" onclick="onClickedConfirmApplyCycles();">Yes</div>
+                    <div class="button right marL-10" onclick="onClickedCancelApplyCycles();">No</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var aminos = [];
+    var masks = [];
+    var view_mode = 0; //0: view, 1: edit, 2: add
+    var changed_mask_build = false;
+
+    var recipesTable;
+    var detailMaskSetTable;
+    var detailMaskSetTableEditor;
+    var current_recipe_id = 0;
+    var designs = [];
+    var created_recipes = "{{ g.user.created_recipes }}";
+    var designdetailslabels = [];
+    var detail_mask_set_changes = '';
+
+    $.fn.dataTable.ext.search.push(
+        function( settings, data, dataIndex ) {
+            var result = true;
+            var active = 0;
+            if ( $('#active_toogle').prop("checked")  )
+                active = 1;
+
+            if ( data[19] == active )
+                result = true;
+            else
+                result = false;
+
+            return result;
+        }
+    );
+    $(document).ready(function() {
+        $(".uniform_on").uniform();
+
+        if ( created_recipes == null )
+            created_recipes = "";
+
+        {% for amino in aminos %}
+            var tmp = {
+                "label": "{{ amino.abbre }} (" + "{{ amino.short }}" + ")",
+                "value": "{{ amino.abbre }} (" + "{{ amino.short }}" + ")",
+                "short": "{{ amino.short }}"
+            };
+            aminos.push(tmp);
+        {% endfor %}
+
+        {% for label in designdetailslabels %}
+            var tmp = {
+                "label": "{{ label.label }}",
+                "label_num": "{{ label.label_num }}"
+            };
+            designdetailslabels["{{ label.id }}"] = tmp;
+        {% endfor %}
+
+        {% for design in designs %}
+            var tmp = {
+                "id": "{{ design.id }}",
+                "protocol": "{{ design.protocol }}",
+                "mask_num": "{{ design.mask_num }}",
+                "label_ids": "{{ design.label_ids }}",
+                "active": "{{ design.active }}"
+            };
+            designs.push(tmp);
+        {% endfor %}
+
+
+        $('#active_toogle').bootstrapToggle();
+        $('#active_toogle').change(function() {
+            if ( recipesTable ) {
+                recipesTable.draw();
+            }
+        });
+
+        recipesTable = $('#recipes_table').DataTable({
+             "searching":true,
+             "bInfo":false,
+             "scrollY":400,
+             "scrollX":false,
+             "paging":false,
+             "ordering":true,
+             "order":[],
+             select: {
+                style:    'single'
+             },
+             columns:[
+                 {data:'checkbox',defaultContent:'',className:'select-checkbox',orderable:false},
+                 {data:'id'},
+                 {data:'design'},
+                 {data:'userid'},
+                 {data:'name'},
+                 {data:'design_text'},
+                 {data:'supplier'},
+                 {data:'block_type'},
+                 {data:'x_origin'},
+                 {data:'y_origin'},
+                 {data:'feature_diameter'},
+                 {data:'x_features'},
+                 {data:'x_spacing'},
+                 {data:'y_features'},
+                 {data:'y_spacing'},
+                 {data:'mask_list'},
+                 {data:'date'},
+                 {data:'mask_num'},
+                 {data:'notes'},
+                 {data:'active'},
+                 {data:'active_text'},
+                 {data:'protection'},
+                 {data:'spacer'},
+                 {data:'standard'}
+             ],
+             columnDefs:[
+                 {
+                     "targets":[0],
+                     "width":"20px"
+                 },
+                 {
+                     "targets":[1,2,3,6,7,8,9,10,11,12,13,14,15,17,18,19,20,21,22,23],
+                     "visible":false
+                 },
+                 {
+                     "targets":[4],
+                     "width": "50%"
+                 },
+                 {
+                     "targets":[5],
+                     "width": "18%"
+                 },
+                 {
+                     "targets":[16],
+                     "width": "50px"
+                 },
+                 {
+                     "targets":[20],
+                     "width": "70px",
+                     "class": "dt-center"
+                 }
+
+             ]
+        });
+        recipesTable.on( 'select', function ( e, dt, type, indexes ) {
+             if ( view_mode > 0 )
+                 return;
+
+             var rowData = recipesTable.rows( ".selected" ).data().toArray();
+             if ( rowData && rowData.length > 0 ) {
+                 $('#btn_download').removeAttr("disabled");
+                 current_recipe_id = rowData[0]['id'];
+                 showRecipeDetail(rowData[0]);
+                 var tmp_array = created_recipes.split(",");
+                 var user_role = {{ g.user.role }};
+                 if ( user_role == 2 || $.inArray(current_recipe_id.toString(),tmp_array) >= 0  ){
+                     $('#btn_edit').removeAttr("disabled");
+                     $('#btn_delete').removeAttr("disabled");
+                 }else{
+                     $('#btn_edit').attr("disabled", "disabled");
+                     $('#btn_delete').attr("disabled", "disabled");
+                 }
+             }else{
+                 current_recipe_id = 0;
+                 $('#btn_edit').attr("disabled", "disabled");
+                 $('#btn_delete').attr("disabled", "disabled");
+                 $('#btn_download').attr("disabled", "disabled");
+             }
+         })
+         .on( 'deselect', function ( e, dt, type, indexes ) {
+             if ( view_mode > 0 )
+                 return;
+
+             current_recipe_id = 0;
+             var rowData = recipesTable.rows( ".selected" ).data().toArray();
+             if ( rowData && rowData.length > 0 ) {
+                 $('#btn_edit').removeAttr("disabled");
+                 $('#btn_delete').removeAttr("disabled");
+                 $('#btn_download').removeAttr("disabled");
+             }else{
+                 $('#btn_edit').attr("disabled", "disabled");
+                 $('#btn_delete').attr("disabled", "disabled");
+                 $('#btn_download').attr("disabled", "disabled");
+             }
+         });
+
+        $('#detail_design').change(function(){
+            var design_id = $(this).val();
+            masks = [];
+            for(var i=0;i<designs.length;i++){
+                if ( designs[i]['id'] == design_id ){
+                    var tmp_array = designs[i]['label_ids'].split(",");
+                    for(var j=0;j<tmp_array.length;j++){
+                        var tmp_label = designdetailslabels[tmp_array[j]]['label'];
+                        var tmp_label_array = tmp_label.split(",");
+                        for(var k=0;k<tmp_label_array.length;k++){
+                            var json_obj = {
+                                'label': tmp_label_array[k],
+                                'value': tmp_array[j] * 10000 + k
+                            };
+                            masks.push(json_obj);
+                        }
+                    }
+                    break;
+                }
+            }
+            initMaskSetTable();
+            getMaskSetParam(design_id);
+            changed_mask_build = true;
+        });
+
+        $('#detail_recipe_name').blur(function(){
+            /*
+            var recipe_name = $(this).val().trim();
+            var design_id = $('#detail_design').val();
+            if ( design_id != null ){
+                getGalHeader(recipe_name, design_id);
+            }
+            */
+        });
+
+        $('#detail_supplier, #detail_block_type, #detail_x_origin, #detail_y_origin, #detail_feature_diameter, #detail_x_features, #detail_x_spacing, #detail_y_features, #detail_y_spacing').blur(function(){
+            var protocol = $('#detail_design option:selected').text();
+            var supplier = $('#detail_supplier').val().trim();
+            var block_type = $('#detail_block_type').val();
+            var x_origin = $('#detail_x_origin').val().trim();
+            var y_origin = $('#detail_y_origin').val().trim();
+            var feature_diameter = $('#detail_feature_diameter').val().trim();
+            var x_features = $('#detail_x_features').val().trim();
+            var x_spacing = $('#detail_x_spacing').val().trim();
+            var y_features = $('#detail_y_features').val().trim();
+            var y_spacing = $('#detail_y_spacing').val().trim();
+
+            getMaldiGalHeader(protocol, supplier, block_type, x_origin, y_origin, feature_diameter, x_features, x_spacing, y_features, y_spacing);
+        });
+
+        getAllRecipes();
+        initMaskSetTable();
+        initDetailValue();
+        ///////////////////////////////////////////////////////////////////////////
+
+
+        adjustControls();
+        $(window).resize(function() {
+             adjustControls();
+        });
+    });
+
+
+    // adjust controls position
+    function adjustControls(){
+        var operation_bar_height = $('#operation_bar').height();
+        var header_height = $('#header_part').height();
+        var table_header_height = $('#gal_table_wrapper .dataTables_scrollHead').height();
+		$('#gal_table_wrapper .dataTables_scrollBody').height($(window).height() - table_header_height - operation_bar_height - header_height - 135);
+
+		table_header_height = $('#mask_set_table_wrapper .dataTables_scrollHead').height();
+		$('#mask_set_table_wrapper .dataTables_scrollBody').height($(window).height() - table_header_height - operation_bar_height - header_height - 135);
+
+
+
+
+		/////////
+        $('#recipe_detail_content_wrapper').css('max-height', $(window).height() - operation_bar_height - 130 + 'px');
+
+        table_header_height = $('#recipes_table_wrapper .dataTables_scrollHead').height();
+		$('#recipes_table_wrapper .dataTables_scrollBody').height($(window).height() - table_header_height - operation_bar_height - 100);
+		recipesTable.columns.adjust().draw();
+        ////////
+    }
+
+
+    /* get All Recipes */
+    function getAllRecipes(){
+        recipesTable.clear().draw();
+        $.ajax({
+            type: 'POST',
+            url: "{{ url_for('get_maldi_recipes')}}",
+            processData: false,
+            contentType: false,
+            dataType: "text",
+            success: function (response) {
+                var msg = 'Operation Failed.';
+                try {
+                    var data = JSON.parse(response);
+                    if (data['result'] == 'SUCCESS') {
+                        recipesTable.clear().draw();
+                        for(var i=0;i<data['data'].length;i++){
+                            var date = new Date(data['data'][i]['date']);
+                            date = date.getFullYear() + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" +  ("0" + date.getDate()).slice(-2);
+                            var active = 0;
+                            var active_text = 'No';
+                            if ( data['data'][i]['active'] == 1 ){
+                                active = 1;
+                                active_text = 'Yes';
+                            }
+
+                            recipesTable.rows.add([
+                                {
+                                    'id': data['data'][i]['id'],
+                                    'design': data['data'][i]['design'],
+                                    'userid': data['data'][i]['userid'],
+                                    'name': data['data'][i]['name'],
+                                    'design_text':data['data'][i]['design_text'],
+                                    'supplier': data['data'][i]['supplier'],
+                                    'block_type': data['data'][i]['block_type'],
+                                    'x_origin': data['data'][i]['x_origin'],
+                                    'y_origin': data['data'][i]['y_origin'],
+                                    'feature_diameter': data['data'][i]['feature_diameter'],
+                                    'x_features': data['data'][i]['x_features'],
+                                    'x_spacing': data['data'][i]['x_spacing'],
+                                    'y_features': data['data'][i]['y_features'],
+                                    'y_spacing': data['data'][i]['y_spacing'],
+                                    'mask_list': data['data'][i]['mask_list'],
+                                    'date': date,
+                                    'mask_num': data['data'][i]['mask_num'],
+                                    'notes': data['data'][i]['notes'],
+                                    'active': active,
+                                    'active_text': active_text,
+                                    "protection": data['data'][i]['protection'],
+                                    "spacer": data['data'][i]['spacer'],
+                                    "standard": data['data'][i]['standard']
+
+                                }
+                            ]);
+                        }
+                        recipesTable.draw();
+                        return;
+                    } else {
+                        msg = data['msg'];
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    /* show Recipe Detail */
+    function showRecipeDetail(_data){
+        $('#detail_recipe_name').val(_data['name']);
+        $('#detail_user').val(_data['userid']);
+
+        $('#detail_design').html("");
+        for(var i=0;i<designs.length;i++){
+            if ( designs[i]['id'] == _data['design'] ){
+                $('#detail_design').html("<option value='" + designs[i]['id'] + "' selected>" + designs[i]['protocol'] + "</option>");
+                break;
+            }
+        }
+
+        $('#detail_supplier').val(_data['supplier']);
+        $('#detail_block_type').val(_data['block_type']);
+        $('#detail_x_origin').val(_data['x_origin']);
+        $('#detail_y_origin').val(_data['y_origin']);
+        $('#detail_feature_diameter').val(_data['feature_diameter']);
+        $('#detail_x_features').val(_data['x_features']);
+        $('#detail_x_spacing').val(_data['x_spacing']);
+        $('#detail_y_features').val(_data['y_features']);
+        $('#detail_y_spacing').val(_data['y_spacing']);
+        $('#detail_protection').val(_data['protection']);
+        $('#detail_spacer').val(_data['spacer']);
+        $('#detail_standard').val(_data['standard']);
+
+        $('#detail_notes').val(_data['notes']);
+        if (_data['active'] == 1){
+            $('#detail_active').prop('checked', true);
+        }else{
+            $('#detail_active').prop('checked', false);
+        }
+        $.uniform.update();
+
+        masks = [];
+        for(var i=0;i<designs.length;i++){
+            if ( designs[i]['id'] == _data['design'] ){
+                var tmp_array = designs[i]['label_ids'].split(",");
+                for(var j=0;j<tmp_array.length;j++){
+                    var tmp_label = designdetailslabels[tmp_array[j]]['label'];
+                    var tmp_label_array = tmp_label.split(",");
+                    for(var k=0;k<tmp_label_array.length;k++){
+                        var json_obj = {
+                            'label': tmp_label_array[k],
+                            'value': tmp_array[j] * 10000 + k
+                        };
+                        masks.push(json_obj);
+                    }
+                }
+                break;
+            }
+        }
+        initMaskSetTable();
+        showDetailMaskSetTable(_data['mask_list']);
+
+        getMaldiGalHeader(_data['design_text'], _data['supplier'], _data['block_type'], _data['x_origin'], _data['y_origin'], _data['feature_diameter'], _data['x_features'], _data['x_spacing'], _data['y_features'], _data['y_spacing']);
+    }
+
+    function showDetailMaskSetTable(_masklist){
+        if ( _masklist ) {
+            var mask_list_array = _masklist.split(":");
+            for (var i = 0; i < mask_list_array.length; i++) {
+                var label_str = mask_list_array[i].split(",")[0];
+                var label_id = Math.floor(label_str/10000);
+                var label_index = label_str % 10000;
+
+                if ( designdetailslabels[label_id] == null )
+                    continue;
+
+                var tmp = designdetailslabels[label_id]['label'];
+                var tmp_array = tmp.split(",");
+                var label = tmp_array[label_index];
+
+                var amino_short = mask_list_array[i].split(",")[1];
+                var amino_abbre = "";
+                for (var j = 0; j < aminos.length; j++) {
+                    if (aminos[j]['short'] == amino_short) {
+                        amino_abbre = aminos[j]['value'];
+                        break;
+                    }
+                }
+                detailMaskSetTable.rows.add(
+                    [
+                        {
+                            'id': i+1,
+                            'mask': label,
+                            'amino': amino_abbre,
+                            'label_id': label_str
+                        }
+                    ]
+                ).draw();
+
+            }
+            $('#detail_amino_count').val(mask_list_array.length);
+        }else{
+            detailMaskSetTable.clear().draw();
+            $('#detail_amino_count').val("0");
+        }
+    }
+
+    /* initialize mask set table */
+    function initMaskSetTable(){
+        if ( detailMaskSetTable != null ){
+            detailMaskSetTable.destroy();
+            detailMaskSetTable = null;
+        }
+
+        detailMaskSetTable = $('#detail_mask_set_table').DataTable({
+             "searching":false,
+             "bInfo":false,
+             "scrollY":170,
+             "scrollX":true,
+             "paging":false,
+             "ordering":false,
+             "order":[[2, 'asc']],
+             columns:[
+                 {data:'checkbox',defaultContent:'',className:'select-checkbox',orderable:false},
+                 {data:'id'},
+                 {data:'mask'},
+                 {data:'amino'},
+                 {data:'label_id'}
+             ],
+             columnDefs:[
+                 {
+                     "targets":[4],
+                     "visible":false
+                 },
+                 {
+                   "targets":[0],
+                   "width":"10px"
+                 },
+                 {
+                     "targets":[1],
+                     "class": "dt-center",
+                     "width":"50px"
+                 },
+                 {
+                     "targets":[2],
+                     "width":"50%"
+                 }
+             ],
+             select: {
+	             style:    'os',
+	             selector: 'td:first-child'
+	         }
+        });
+
+        $('#detail_mask_set_table').on( 'click', 'tbody td:not(:first-child)', function (e) {
+            if ( view_mode > 0 )
+            {
+                detailMaskSetTableEditor.inline(this, {
+                    onBlur: 'submit'
+                });
+            }
+	    });
+        detailMaskSetTable.on('select', function(e, dt, type, indexes) {
+            if ( view_mode == 0 )
+                return;
+
+            var selectedRows = detailMaskSetTable.rows(".selected");
+            if ( selectedRows.count() > 0 ) {
+                $('#btn_delete_mask').removeAttr("disabled");
+            }
+            else{
+                $('#btn_delete_mask').attr("disabled", "disabled");
+            }
+        });
+        detailMaskSetTable.on('deselect', function(e, dt, type, indexes){
+            if ( view_mode == 0 )
+                return;
+
+            var selectedRows = detailMaskSetTable.rows(".selected");
+            if ( selectedRows.count() > 0 ) {
+                $('#btn_delete_mask').removeAttr("disabled");
+            }
+            else{
+                $('#btn_delete_mask').attr("disabled", "disabled");
+            }
+        });
+
+
+        if ( detailMaskSetTableEditor ) {
+            detailMaskSetTableEditor.destroy();
+            detailMaskSetTableEditor = null;
+        }
+        detailMaskSetTableEditor = new $.fn.dataTable.Editor({
+            table:"#detail_mask_set_table",
+            idSrc: 'id',
+            fields:[
+                {
+                    label:"Mask",
+                    name:"mask",
+                    type:"select",
+                    options:masks
+                },
+                {
+                    label:"Amino",
+                    name:"amino",
+                    type:"select",
+                    options:aminos
+                }
+            ]
+        });
+        detailMaskSetTableEditor.on( 'open', function ( e, json, data ) {
+            if ($('div.DTE #DTE_Field_mask').length) {
+                var cell = $('div.DTE').parent().parent();
+                var rowindex = detailMaskSetTable.row(cell).index();
+                var rowData = detailMaskSetTable.row(cell).data();
+                var label_id = rowData['label_id'];
+                $('div.DTE #DTE_Field_mask').val(label_id);
+            }
+        });
+        detailMaskSetTableEditor.on( 'submitSuccess', function ( e, json, data ) {
+            changed_mask_build = true;
+
+            for(var i=0; i < detailMaskSetTable.rows().count(); i++ ) {
+                var tmp_object = detailMaskSetTable.row(i).data();
+                if (tmp_object['id'] == json['data'][0]['id']) {
+                    if ( json['data'][0]['mask'] && isNaN(json['data'][0]['mask']) == false && json['data'][0]['mask'] >= 10000) {
+                        var label_id = Math.floor(json['data'][0]['mask'] / 10000);
+                        var label_index = json['data'][0]['mask'] % 10000;
+
+                        var tmp_labels = designdetailslabels[label_id]['label'];
+                        var tmp_labels_array = tmp_labels.split(",");
+
+                        tmp_object['mask'] = tmp_labels_array[label_index];
+                        tmp_object['label_id'] = label_id * 10000 + label_index;
+                        detailMaskSetTable.row(i).data(tmp_object);
+                    }
+                    break;
+                }
+            }
+        });
+
+        $('#detail_mask_set_table_wrapper .dataTables_scrollBody').scroll(function(){
+
+        });
+
+        $('#detail_mask_set_table').keydown(function(e){
+			if ( e.which == 13 ){
+				e.preventDefault();
+
+				var cell = $('div.DTE').parent();
+				setTimeout(function(){
+					var cellindex = cell.index();
+					if ( cellindex == 2 ){
+						cell.parent().next().children(":nth-child(2)").trigger('click');
+						return;
+					}
+					cell.next().trigger('click');
+				}, 200);
+			}
+		});
+
+
+        detailMaskSetTable.clear().draw();
+        $('#detail_amino_count').val(0);
+    }
+
+    /* make detail controls empty */
+    function initDetailValue(){
+        $('#detail_recipe_name').val("");
+        $('#detail_user').val(null);
+        $('#detail_design').val(null);
+        $('#detail_supplier').val("");
+        $('#detail_block_type').val(0);
+        $('#detail_x_origin').val("");
+        $('#detail_y_origin').val("");
+        $('#detail_feature_diameter').val("");
+        $('#detail_x_features').val("");
+        $('#detail_x_spacing').val("");
+        $('#detail_y_features').val("");
+        $('#detail_y_spacing').val("");
+        $('#detail_protection').val(0);
+        $('#detail_spacer').val(0);
+        $('#detail_standard').val(0);
+        $('#detail_notes').val("");
+        detailMaskSetTable.clear().draw();
+        $('#detail_amino_count').val(0);
+        $('#detail_gal_header').val("");
+        $('#detail_active').prop("checked", true);
+        $.uniform.update();
+    }
+
+    /* enable detail controls */
+    function enableDetailControls(_enable){
+        if ( _enable ){
+            $('#detail_recipe_name').removeAttr("disabled");
+            $('#detail_user').removeAttr("disabled");
+            $('#detail_design').removeAttr("disabled");
+            $('#detail_supplier').removeAttr("disabled");
+            //$('#detail_block_type').removeAttr("disabled");
+            $('#detail_x_origin').removeAttr("disabled");
+            $('#detail_y_origin').removeAttr("disabled");
+            $('#detail_feature_diameter').removeAttr("disabled");
+            $('#detail_x_features').removeAttr("disabled");
+            $('#detail_x_spacing').removeAttr("disabled");
+            $('#detail_y_features').removeAttr("disabled");
+            $('#detail_y_spacing').removeAttr("disabled");
+            $('#detail_protection').removeAttr("disabled");
+            $('#detail_spacer').removeAttr("disabled");
+            $('#detail_standard').removeAttr("disabled");
+            $('#detail_notes').removeAttr("disabled");
+            $('#btn_add_mask').removeAttr("disabled");
+            $('#detail_active').removeAttr("disabled");
+            $('#detail_amino_count').removeAttr("disabled");
+            $('#btn_apply_count').removeAttr("disabled");
+
+            $('#detail_gal_header').removeAttr("disabled");
+        }else{
+            $('#detail_recipe_name').attr("disabled", "disabled");
+            $('#detail_user').attr("disabled", "disabled");
+            $('#detail_design').attr("disabled", "disabled");
+            $('#detail_supplier').attr("disabled", "disabled");
+            //$('#detail_block_type').attr("disabled", "disabled");
+            $('#detail_x_origin').attr("disabled", "disabled");
+            $('#detail_y_origin').attr("disabled", "disabled");
+            $('#detail_feature_diameter').attr("disabled", "disabled");
+            $('#detail_x_features').attr("disabled", "disabled");
+            $('#detail_x_spacing').attr("disabled", "disabled");
+            $('#detail_y_features').attr("disabled", "disabled");
+            $('#detail_y_spacing').attr("disabled", "disabled");
+            $('#detail_protection').attr("disabled", "disabled");
+            $('#detail_spacer').attr("disabled", "disabled");
+            $('#detail_standard').attr("disabled", "disabled");
+            $('#btn_add_mask').attr("disabled", "disabled");
+            $('#detail_notes').attr("disabled", "disabled");
+            $('#detail_active').attr("disabled", "disabled");
+            $('#detail_amino_count').attr("disabled", "disabled");
+            $('#btn_apply_count').attr("disabled", "disabled");
+
+            $('#detail_gal_header').attr("disabled", "disabled")
+        }
+        $.uniform.update();
+
+    }
+
+    /**
+     * get mask set parameters
+     * */
+    function getMaskSetParam(_id){
+        var fd=new FormData();
+        fd.append("mask_set_id", _id);
+        $.ajax({
+            type: 'POST',
+            url: "{{ url_for('get_mask_set_param')}}",
+            processData: false,
+            contentType: false,
+            dataType: "text",
+            data: fd,
+            success: function (response) {
+                var msg = 'Operation Failed.';
+                try {
+                    var data = JSON.parse(response);
+                    if (data['result'] == 'SUCCESS') {
+                        $('#detail_supplier').val(data['data']['supplier']);
+                        $('#detail_block_type').val(data['data']['block_type']);
+                        $('#detail_x_origin').val(data['data']['x_origin']);
+                        $('#detail_y_origin').val(data['data']['y_origin']);
+                        $('#detail_feature_diameter').val(data['data']['feature_diameter']);
+                        $('#detail_x_features').val(data['data']['x_features']);
+                        $('#detail_x_spacing').val(data['data']['x_spacing']);
+                        $('#detail_y_features').val(data['data']['y_features']);
+                        $('#detail_y_spacing').val(data['data']['y_spacing']);
+
+                        getMaldiGalHeader(data['data']['protocol'], data['data']['supplier'], data['data']['block_type'], data['data']['x_origin'], data['data']['y_origin'], data['data']['feature_diameter'], data['data']['x_features'], data['data']['x_spacing'], data['data']['y_features'], data['data']['y_spacing']);
+                        initMaskSetTable();
+                        return;
+                    } else {
+                        msg = data['msg'];
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    /* Get Gal Header */
+    function getMaldiGalHeader(_protocol, _supplier, _block_type, _x_orign, _y_origin, _feature_diameter, _x_features, _x_spacing, _y_features, _y_spacing){
+        $('#detail_gal_header').val("");
+        var fd=new FormData();
+        fd.append("protocol", _protocol);
+        fd.append("supplier", _supplier);
+        fd.append("block_type", _block_type);
+        fd.append("x_origin", _x_orign);
+        fd.append("y_origin", _y_origin);
+        fd.append("feature_diameter", _feature_diameter);
+        fd.append("x_features", _x_features);
+        fd.append("x_spacing", _x_spacing);
+        fd.append("y_features", _y_features);
+        fd.append("y_spacing", _y_spacing);
+
+        $.ajax({
+            type: 'POST',
+            url: "{{ url_for('generate_maldi_gal_header')}}",
+            processData: false,
+            contentType: false,
+            dataType: "text",
+            data: fd,
+            success: function (response) {
+                var msg = 'Operation Failed.';
+                try {
+                    var data = JSON.parse(response);
+                    if (data['result'] == 'SUCCESS') {
+                        $('#detail_gal_header').val(data['data']);
+                        return;
+                    } else {
+                        msg = data['msg'];
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+
+    /* Clicked Add button */
+    function clickedRecipeAdd(){
+        view_mode = 2;
+        detail_mask_set_changes = '';
+        $('#btn_add').addClass("hidden");
+        $('#btn_edit').addClass("hidden");
+        $('#btn_delete').addClass("hidden");
+        $('#btn_download').addClass("hidden");
+        $('#btn_save').removeClass("hidden");
+        $('#btn_cancel').removeClass("hidden");
+        recipesTable.rows('.selected').deselect();
+        $('#recipes_table').addClass("edit");
+        enableDetailControls(true);
+
+        var design_dropdown_str = "";
+        for(var i=0;i<designs.length;i++){
+            if ( designs[i]['active'] == 1 ) {
+                if (design_dropdown_str == "") {
+                    design_dropdown_str += "<option value='" + designs[i]['id'] + "'>" + designs[i]['protocol'] + "</option>";
+                } else if (designs[i]['active'] == 1) {
+                    design_dropdown_str += "<option value='" + designs[i]['id'] + "'>" + designs[i]['protocol'] + "</option>";
+                }
+            }
+        }
+        $('#detail_design').html(design_dropdown_str);
+        initDetailValue();
+        //$('#detail_active_wrapper').removeClass("hidden");
+        $('#detail_user').val({{ g.user.id }});
+        masks = [];
+        initMaskSetTable();
+    }
+
+    /* Switch to edit mode */
+    function clickedRecipeEdit(){
+        if ( current_recipe_id == 0 )
+            return;
+
+        var cur_design_id = $('#detail_design').val();
+        var design_dropdown_str = "";
+        for(var i=0;i<designs.length;i++){
+            if ( designs[i]['id'] == cur_design_id ){
+                design_dropdown_str += "<option value='" + designs[i]['id'] + "' selected>" + designs[i]['protocol'] + "</option>";
+            }else if ( designs[i]['active'] == 1 ){
+                design_dropdown_str += "<option value='" + designs[i]['id'] + "'>" + designs[i]['protocol'] + "</option>";
+            }
+        }
+        $('#detail_design').html(design_dropdown_str);
+
+        view_mode = 1;
+        changed_mask_build = false;
+        detail_mask_set_changes = '';
+        $('#btn_add').addClass("hidden");
+        $('#btn_edit').addClass("hidden");
+        $('#btn_delete').addClass("hidden");
+        $('#btn_download').addClass("hidden");
+        $('#btn_save').removeClass("hidden");
+        $('#btn_cancel').removeClass("hidden");
+        $('#recipes_table').addClass("edit");
+        //$('#detail_active_wrapper').removeClass("hidden");
+        enableDetailControls(true);
+        detailMaskSetTable.rows(".selected").deselect().draw();
+    }
+
+    /* Delete current recipe */
+    function clickedRecipeDelete(){
+        if ( current_recipe_id > 0 ) {
+            $('#modal_confirm_delete').modal({backdrop: 'static', keyboard: false});
+        }
+    }
+
+    /* Save current changes */
+    function clickedRecipeSave(){
+        var name = $('#detail_recipe_name').val().trim();
+        var userid = $('#detail_user').val();
+        var user_text = $('#detail_user option:selected').text();
+        var designid = $('#detail_design').val();
+        var design_text = $('#detail_design option:selected').text();
+        var supplier = $('#detail_supplier').val().trim();
+        var block_type = $('#detail_block_type').val();
+        var x_origin = $('#detail_x_origin').val().trim();
+        var y_origin = $('#detail_y_origin').val().trim();
+        var feature_diameter = $('#detail_feature_diameter').val().trim();
+        var x_features = $('#detail_x_features').val().trim();
+        var x_spacing = $('#detail_x_spacing').val().trim();
+        var y_features = $('#detail_y_features').val().trim();
+        var y_spacing = $('#detail_y_spacing').val().trim();
+        var protection = $('#detail_protection').val();
+        var spacer = $('#detail_spacer').val();
+        var standard = $('#detail_standard').val();
+        var notes = $('#detail_notes').val().trim();
+        var active = 0;
+        var active_text = 'No';
+        if ( $('#detail_active').is(":checked")) {
+            active = 1;
+            active_text = 'Yes';
+        }
+
+        if ( name.length == 0 ){
+            $('#footer_modal_alert .modal-text').text("Recipe Name is required.");
+			$('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+			return;
+        }
+
+        /*
+        if ( userid == null ){
+            $('#footer_modal_alert .modal-text').text("User is required.");
+			$('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+			return;
+        }
+        */
+
+        if ( designid == null ){
+            $('#footer_modal_alert .modal-text').text("Design is required.");
+			$('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+			return;
+        }
+
+        if ( supplier.length == 0 ){
+            $('#footer_modal_alert .modal-text').text("Supplier is required.");
+			$('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+			return;
+        }
+
+        if ( x_origin.length == 0 ){
+            $('#footer_modal_alert .modal-text').text("X Origin is required.");
+			$('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+			return;
+        }
+
+        if ( Math.floor(x_origin) != x_origin || $.isNumeric(x_origin) == false ) {
+            $('#footer_modal_alert .modal-text').text("X Origin should be integer.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if ( y_origin.length == 0){
+            $('#footer_modal_alert .modal-text').text("Y Origin is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }else if ( Math.floor(y_origin) != y_origin || $.isNumeric(y_origin) == false ){
+            $('#footer_modal_alert .modal-text').text("Y Origin should be integer.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if ( feature_diameter.length == 0){
+            $('#footer_modal_alert .modal-text').text("Feature Diameter is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }else if ( isNaN(feature_diameter) ){
+            $('#footer_modal_alert .modal-text').text("Feature Diameter should be number.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if ( x_features.length == 0){
+            $('#footer_modal_alert .modal-text').text("X Features is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }else if ( Math.floor(x_features) != x_features || $.isNumeric(x_features) == false ){
+            $('#footer_modal_alert .modal-text').text("X Features should be integer.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if ( x_spacing.length == 0){
+            $('#footer_modal_alert .modal-text').text("X Spacing is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }else if ( isNaN(x_spacing)){
+            $('#footer_modal_alert .modal-text').text("X Spacing should be number.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if ( y_features.length == 0){
+            $('#footer_modal_alert .modal-text').text("Y Features is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }else if ( Math.floor(y_features) != y_features || $.isNumeric(y_features) == false ){
+            $('#footer_modal_alert .modal-text').text("Y Features should be integer.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if ( y_spacing.length == 0){
+            $('#footer_modal_alert .modal-text').text("Y Spacing is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }else if ( isNaN(y_spacing)){
+            $('#footer_modal_alert .modal-text').text("Y spacing should be number.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if ( spacer == null ){
+            $('#footer_modal_alert .modal-text').text("Spacer is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }else if ( isNaN(spacer)){
+            $('#footer_modal_alert .modal-text').text("Spacer should be number.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        if ( standard == null){
+            $('#footer_modal_alert .modal-text').text("Standard is required.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }else if ( isNaN(standard)){
+            $('#footer_modal_alert .modal-text').text("Standard should be number.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+
+        detailMaskSetTableEditor.submit();
+        var mask_set_list = "";
+        var mask_build_count = detailMaskSetTable.rows().count();
+        for(var i=0;i<mask_build_count;i++){
+            var rowdata = detailMaskSetTable.row(i).data();
+            if ( rowdata['amino'] == null || rowdata['label_id'] == null)
+                continue;
+
+            var tmp = "";
+            tmp = rowdata['label_id'] + ",";
+            var tmp2 = "";
+            for(var j=0;j<aminos.length;j++){
+                if ( aminos[j]['value'] == rowdata['amino']){
+                    tmp2 = aminos[j]['short'];
+                    break;
+                }
+            }
+            if ( tmp2 == "" )
+                continue;
+            tmp = tmp + tmp2;
+
+            if ( mask_set_list == "" ){
+                mask_set_list = tmp;
+            }else{
+                mask_set_list += ":" + tmp;
+            }
+        }
+
+        if ( mask_set_list == "" ){
+            $('#footer_modal_alert .modal-text').text("You need to add at least one mask set.");
+			$('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+			return;
+        }
+
+        var fd=new FormData();
+        if ( view_mode == 1 ){
+            fd.append("recipeid", current_recipe_id);
+            fd.append("changed_mask_build", changed_mask_build?1:0);
+        }
+        fd.append("recipe_name", name);
+        fd.append("designid", designid);
+        fd.append("design_text", design_text);
+        fd.append("supplier", supplier);
+        fd.append("block_type", block_type);
+        fd.append("x_origin", x_origin);
+        fd.append("y_origin", y_origin);
+        fd.append("feature_diameter", feature_diameter);
+        fd.append("x_features", x_features);
+        fd.append("x_spacing", x_spacing);
+        fd.append("y_features", y_features);
+        fd.append("y_spacing", y_spacing);
+        fd.append("protection", protection);
+        fd.append("spacer", spacer);
+        fd.append("standard", standard);
+        fd.append("user_text", user_text);
+        fd.append("userid", userid);
+        fd.append("notes", notes);
+        fd.append("mask_list", mask_set_list);
+        fd.append("active", active);
+
+        setProgressBarPercent("#progress_bar", 0);
+        $('#progress_bar').show();
+        if ( view_mode == 2 ) // add
+        {
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('add_maldi_recipe')}}",
+                processData: false,
+                contentType: false,
+                dataType: "text",
+                data: fd,
+                success: function (response) {
+                    var msg = 'Operation Failed.';
+                    try {
+                        var data = JSON.parse(response);
+                        if (data['result'] == 'SUCCESS') {
+                            getProcessAdding(data['task_status_url'], fd);
+                            return;
+                        } else {
+                            msg = data['msg'];
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
+                    $('#progress_bar').hide();
+
+                    $('#footer_modal_alert .modal-text').text(msg);
+                    $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+                },
+                error: function (error) {
+                    console.log(error);
+                    $('#progress_bar').hide();
+                }
+            });
+        }else // edit
+        {
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('edit_maldi_recipe')}}",
+                processData: false,
+                contentType: false,
+                dataType: "text",
+                data: fd,
+                success: function (response) {
+                    var msg = 'Operation Failed.';
+                    try {
+                        var data = JSON.parse(response);
+                        if (data['result'] == 'SUCCESS') {
+                            getProcessUpdating(data['task_status_url'], fd);
+                            return;
+                        } else {
+                            msg = data['msg'];
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
+
+                    $("#progress_bar").hide();
+                    $('#footer_modal_alert .modal-text').text(msg);
+                    $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+                },
+                error: function (error) {
+                    console.log(error);
+                    $('#progress_bar').hide();
+                }
+            });
+        }
+    }
+
+    /* get process of adding maldi recipe */
+    function getProcessAdding(_url, _fd){
+        $.ajax({
+            type: 'GET',
+            url: _url,
+            processData: false,
+            contentType: false,
+            dataType: "text",
+            success: function (response) {
+                var msg = 'Operation Failed.';
+                try {
+                    var data = JSON.parse(response);
+                    if (data['status'] == 'Processing') {
+                        if ( data['info'] > 0 ){
+                            $('#progress_bar .title').html("Saving Gal File:");
+                        }
+                        setProgressBarPercent("#progress_bar", data['info']);
+                        setTimeout(function(){
+                            getProcessAdding(_url, _fd);
+                        }, 2000);
+                        return;
+                    } else if ( data['status'] == 'Done' ) {
+                        setProgressBarPercent("#progress_bar", 100);
+                        setTimeout(function(){
+                            $('#progress_bar').hide();
+                            $('#progress_bar .title').html("Processing:");
+                        }, 500);
+
+                        var info_json = data['info'];
+                        var info = JSON.parse(info_json);
+
+                        current_recipe_id = info['id'];
+                        if ( created_recipes == "" )
+                            created_recipes = current_recipe_id;
+                        else
+                            created_recipes += ',' + current_recipe_id;
+
+                        $('#btn_add').removeClass("hidden");
+                        $('#btn_edit').removeClass("hidden");
+                        $('#btn_delete').removeClass("hidden");
+                        $('#btn_download').removeClass("hidden");
+                        $('#btn_save').addClass("hidden");
+                        $('#btn_cancel').addClass("hidden");
+                        //('#detail_active_wrapper').addClass("hidden");
+
+                        $('#btn_edit').attr("disabled", "disabled");
+                        $('#btn_delete').attr("disabled", "disabled");
+                        $('#btn_download').attr("disabled", "disabled");
+                        $('#btn_add_mask').attr("disabled", "disabled");
+                        $('#btn_delete_mask').attr("disabled", "disabled");
+                        enableDetailControls(false);
+
+                        initMaskSetTable();
+                        showDetailMaskSetTable(_fd.get("mask_list"));
+
+                        $('#recipes_table').removeClass("edit");
+
+                        var date = new Date(info['date']);
+                        date = date.getFullYear() + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" +  ("0" + date.getDate()).slice(-2);
+
+                        recipesTable.rows(".selected").deselect();
+                        recipesTable.rows.add(
+                          [
+                              {
+                                  'checkbox':'',
+                                  'id': current_recipe_id,
+                                  'design': _fd.get("designid"),
+                                  'userid': _fd.get("userid"),
+                                  'name': _fd.get("recipe_name"),
+                                  'design_text': _fd.get("design_text"),
+                                  'supplier': _fd.get("supplier"),
+                                  'block_type': _fd.get("block_type"),
+                                  'x_origin': _fd.get("x_origin"),
+                                  'y_origin': _fd.get("y_origin"),
+                                  'feature_diameter': _fd.get("feature_diameter"),
+                                  'x_features': _fd.get("x_features"),
+                                  'x_spacing': _fd.get("x_spacing"),
+                                  'y_features': _fd.get("y_features"),
+                                  'y_spacing': _fd.get("y_spacing"),
+                                  'protection': _fd.get("protection"),
+                                  'spacer': _fd.get("spacer"),
+                                  'standard': _fd.get("standard"),
+                                  'mask_list': _fd.get("mask_list"),
+                                  'date': date,
+                                  'mask_num': 0,
+                                  'notes': _fd.get("notes"),
+                                  'active': _fd.get("active"),
+                                  'active_text': _fd.get("active_text")
+                              }
+                          ]
+                        ).select().draw();
+                        $('#btn_edit').removeAttr("disabled");
+                        $('#btn_delete').removeAttr("disabled");
+                        $('#btn_download').removeAttr("disabled");
+
+                        view_mode = 0;
+                        return;
+                    } else  {
+                        msg = data['info'];
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+
+                $('#progress_bar').hide();
+                $('#progress_bar .title').html("Processing:");
+
+                $('#footer_modal_alert .modal-text').text(msg);
+                $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            },
+            error: function (error) {
+                $('#progress_bar').hide();
+                $('#progress_bar .title').html("Processing:");
+                console.log(error);
+            }
+        });
+    }
+
+    /* get process of updating */
+    function getProcessUpdating(_url, _fd){
+        $.ajax({
+            type: 'GET',
+            url: _url,
+            processData: false,
+            contentType: false,
+            dataType: "text",
+            success: function (response) {
+                var msg = 'Operation Failed.';
+                try {
+                    var data = JSON.parse(response);
+                    if (data['status'] == 'Processing') {
+                        if ( data['info'] > 0 ){
+                            $('#progress_bar .title').html("Saving Gal File:");
+                        }
+                        setProgressBarPercent("#progress_bar", data['info']);
+                        setTimeout(function(){
+                            getProcessUpdating(_url, _fd);
+                        }, 2000);
+                        return;
+                    } else if ( data['status'] == 'Done' ) {
+                        setProgressBarPercent("#progress_bar", 100);
+                        setTimeout(function(){
+                            $('#progress_bar').hide();
+                            $('#progress_bar .title').html("Processing:");
+                        }, 500);
+
+                        var recipe_id = _fd.get("recipeid");
+
+                        $('#btn_add').removeClass("hidden");
+                        $('#btn_edit').removeClass("hidden");
+                        $('#btn_delete').removeClass("hidden");
+                        $('#btn_download').removeClass("hidden");
+                        $('#btn_save').addClass("hidden");
+                        $('#btn_cancel').addClass("hidden");
+
+                        $('#btn_edit').attr("disabled", "disabled");
+                        $('#btn_delete').attr("disabled", "disabled");
+                        $('#btn_download').attr("disabled", "disabled");
+                        $('#btn_add_mask').attr("disabled", "disabled");
+                        $('#btn_delete_mask').attr("disabled", "disabled");
+
+                        $('#recipes_table').removeClass("edit");
+                        enableDetailControls(false);
+
+                        initMaskSetTable();
+                        showDetailMaskSetTable(_fd.get("mask_list"));
+
+                        recipesTable.rows(".selected").deselect();
+                        for(var i=0; i < recipesTable.rows().count(); i++ ) {
+                            var tmp_object = recipesTable.row(i).data();
+                            if ( tmp_object['id'] == recipe_id ){
+                                tmp_object['name'] = _fd.get("recipe_name");
+                                tmp_object['userid'] = _fd.get("userid");
+                                tmp_object['design'] = _fd.get("designid");
+                                tmp_object['design_text'] = _fd.get("design_text");
+                                tmp_object['supplier'] = _fd.get("supplier");
+                                tmp_object['block_type'] = _fd.get("block_type");
+                                tmp_object['x_origin'] = _fd.get("x_origin");
+                                tmp_object['y_origin'] = _fd.get("y_origin");
+                                tmp_object['feature_diameter'] = _fd.get("feature_diameter");
+                                tmp_object['x_features'] = _fd.get("x_features");
+                                tmp_object['x_spacing'] = _fd.get("x_spacing");
+                                tmp_object['y_features'] = _fd.get("y_features");
+                                tmp_object['y_spacing'] = _fd.get("y_spacing");
+                                tmp_object['protection'] = _fd.get("protection");
+                                tmp_object['spacer'] = _fd.get("spacer");
+                                tmp_object['standard'] = _fd.get("standard");
+                                tmp_object['mask_list'] = _fd.get("mask_list");
+                                tmp_object['mask_num'] = 0;
+                                tmp_object['notes'] = _fd.get("notes");
+                                tmp_object['active'] = _fd.get("active");
+                                tmp_object['active_text'] = _fd.get("active_text");
+
+                                recipesTable.row(i).select();
+                                recipesTable.row(i).data(tmp_object).draw();
+
+                                $('#btn_edit').removeAttr("disabled");
+                                $('#btn_delete').removeAttr("disabled");
+                                $('#btn_download').removeAttr("disabled");
+                                break;
+                            }
+                        }
+                        view_mode = 0;
+                        return;
+                    } else  {
+                        msg = data['info'];
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+
+                $('#progress_bar').hide();
+                $('#progress_bar .title').html("Processing:");
+
+                $('#footer_modal_alert .modal-text').text(msg);
+                $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            },
+            error: function (error) {
+                $('#progress_bar').hide();
+                $('#progress_bar .title').html("Processing:");
+                console.log(error);
+            }
+        });
+    }
+
+    /* Cancel current changes */
+    function clickedRecipeCancel(){
+        view_mode = 0;
+        recipesTable.rows(".selected").deselect();
+        initDetailValue();
+        enableDetailControls(false);
+        $('#btn_add').removeClass("hidden");
+        $('#btn_edit').removeClass("hidden");
+        $('#btn_delete').removeClass("hidden");
+        $('#btn_download').removeClass("hidden");
+        $('#btn_edit').attr("disabled", "disabled");
+        $('#btn_delete').attr("disabled", "disabled");
+        $('#btn_download').attr("disabled", "disabled");
+        $('#btn_save').addClass("hidden");
+        $('#btn_cancel').addClass("hidden");
+
+        $('#btn_add_mask').attr("disabled", "disabled");
+        $('#btn_delete_mask').attr("disabled", "disabled");
+
+        $('#recipes_table').removeClass("edit");
+        //$('#detail_active_wrapper').addClass("hidden");
+    }
+
+    // Add mask
+    function onClickedAddMaskSet(){
+        var count = detailMaskSetTable.rows().count();
+        detailMaskSetTable.rows.add([
+            {
+                'checkbox': '',
+                'id': count+1,
+                "mask": null,
+                "amino": null,
+                "label_id": null
+            }
+        ]).draw();
+        rearrangeDetailMaskSetTable();
+        changed_mask_build = true;
+    }
+
+    /**
+     * Init mask set table with count
+     * */
+    function onClickedApplyCount(){
+        var count = $('#detail_amino_count').val().trim();
+
+        if ( count.length == 0 ){
+            return;
+        }
+        else if ( Math.floor(count) != count || $.isNumeric(count) == false ){
+            $('#footer_modal_alert .modal-text').text("Count should be integer.");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+        else if ( count <= 0 ){
+            $('#footer_modal_alert .modal-text').text("Count should be over 0");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+        else if ( count > 1000 ){
+            $('#footer_modal_alert .modal-text').text("There is a 1000 cycle limit per Recipe!");
+            $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+        else if ( count > 250 ){
+            $('#modal_confirm_apply_cycles .title').text("Are you sure you want to add " + count + " cycles to this recipe?");
+            $('#modal_confirm_apply_cycles').modal({backdrop: 'static', keyboard: false});
+            return;
+        }
+
+        addCycles();
+
+
+    }
+
+    // Add Cycles actually
+    function addCycles(){
+        var count = $('#detail_amino_count').val().trim();
+
+        var cur_count = detailMaskSetTable.rows().count();
+        if ( cur_count >= count )
+            return;
+
+        count = count - cur_count;
+
+        for(var i=0;i<count;i++){
+            detailMaskSetTable.rows.add([
+            {
+                'checkbox': '',
+                'id': cur_count + i + 1,
+                "mask": null,
+                "amino": null,
+                "label_id": null
+            }
+            ]).draw();
+            changed_mask_build = true;
+        }
+    }
+
+    // Clicked add cyels confirm button.
+    function onClickedConfirmApplyCycles(){
+        $('#modal_confirm_apply_cycles').modal('hide');
+        addCycles();
+    }
+
+    // Clicked add cyels cancel button.
+    function onClickedCancelApplyCycles(){
+        $('#modal_confirm_apply_cycles').modal('hide');
+    }
+
+    // Delete mask
+    function onClickedDeleteMaskSet(){
+        var selectedRows = detailMaskSetTable.rows(".selected");
+        selectedRows.remove().draw(false);
+        rearrangeDetailMaskSetTable();
+        changed_mask_build = true;
+    }
+
+    /**
+     * Set auto number on Detail Mask Set table.
+     * */
+    function rearrangeDetailMaskSetTable(){
+        for(var i=0; i < detailMaskSetTable.rows().count(); i++ ) {
+            var tmp_object = detailMaskSetTable.row(i).data();
+            tmp_object['id'] = i+1;
+            detailMaskSetTable.row(i).data(tmp_object).draw();
+        }
+    }
+
+
+    // Confirm Delete Recipe
+    function onClickedConfirmDeleteRecipe(){
+        var fd=new FormData();
+        fd.append("recipe_id", current_recipe_id);
+        $.ajax({
+            type: 'POST',
+            url: "{{ url_for('delete_maldi_recipe')}}",
+            processData: false,
+            contentType: false,
+            dataType: "text",
+            data: fd,
+            success: function (response) {
+                $('#modal_confirm_delete').modal('hide');
+                var msg = 'Operation Failed.';
+                try {
+                    var data = JSON.parse(response);
+                    if (data['result'] == 'SUCCESS') {
+                        current_recipe_id = 0;
+                        recipesTable.rows(".selected").remove().draw(false);
+                        $('#btn_add').removeClass("hidden");
+                        $('#btn_edit').removeClass("hidden");
+                        $('#btn_delete').removeClass("hidden");
+                        $('#btn_save').addClass("hidden");
+                        $('#btn_cancel').addClass("hidden");
+                        initDetailValue();
+                        enableDetailControls(false);
+                        view_mode = 0;
+
+                        return;
+                    } else {
+                        msg = data['msg'];
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+                $('#footer_modal_alert .modal-text').text(msg);
+                $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+    }
+
+    // Cancel Delete Recipe
+    function onClickedCancelDeleteRecipe(){
+        $('#modal_confirm_delete').modal('hide');
+    }
+
+    /**
+     * Download maldi gal file
+     */
+    function clickedRecipeGalDownload(){
+        if ( current_recipe_id == 0 )
+            return;
+
+        var offset = new Date().getTimezoneOffset();
+        window.location =  "{{url_for('download_maldi_gal') }}?recipe_id=" + current_recipe_id + "&timeoffset=" + offset;
+    }
+</script>

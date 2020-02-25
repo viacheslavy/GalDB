@@ -1,0 +1,13 @@
+Flask==0.12
+Flask-SQLAlchemy==2.3.2
+Jinja2==2.8
+SQLAlchemy==1.2
+Werkzeug==0.14.1
+argparse==1.4.0
+psycopg2==2.7.4
+flask_migrate==2.1.1
+flask_script==2.0.6
+flask_login==0.4.1
+cryptography==2.2.2
+XlsxWriter==1.0.5
+Flask-RESTful==0.3.6

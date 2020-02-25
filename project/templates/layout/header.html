@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="google" content="notranslate">
+        <title>DesignDB</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+        <!-- Favorite Icon-->
+        <link href="{{ url_for('static', filename='img/logo.png') }}" rel="shortcut icon">
+
+        <!-- jquery ui -->
+        <link href="{{ url_for('static', filename='vendors/jquery-ui-1.10.3.min.css') }}" rel="stylesheet">
+
+        <!-- Bootstrap -->
+        <link href="{{ url_for('static', filename='vendors/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='vendors/bootstrap/css/bootstrap-responsive.min.css') }}" rel="stylesheet">
+
+        <!-- Font Awesome -->
+        <link href="{{ url_for('static', filename='vendors/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
+
+        <!-- DataTables-->
+        <link href="{{ url_for('static', filename='vendors/datatables/media/css/jquery.dataTables.min.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='vendors/datatables/extensions/Select/css/select.dataTables.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='vendors/datatables/extensions/Editor-1.7.2/css/editor.dataTables.min.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='vendors/datatables/extensions/Scroller/css/scroller.dataTables.min.css') }}" rel="stylesheet">
+        <!-- DataTables END-->
+
+        <!-- UniForm -->
+        <link href="{{ url_for('static', filename='vendors/uniform.default.css') }}" rel="stylesheet">
+        <!-- UniForm END -->
+
+        <!-- Bootstrap toggle -->
+        <link href="{{ url_for('static', filename='vendors/bootstrap-toggle/bootstrap-toggle.min.css') }}" rel="stylesheet">
+        <!-- Bootstrap toogle End -->
+
+        <!-- Chosen -->
+        <link href="{{ url_for('static', filename='vendors/chosen.min.css') }}" rel="stylesheet">
+        <!-- Chosen End -->
+
+        <!-- BootStrap DatePicker -->
+        <link href="{{ url_for('static', filename='vendors/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}" rel="stylesheet">
+        <!-- BootStrap DatePicker END-->
+
+        <!-- Custom styles -->
+        <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    </head>
+
+    <body>
+        <div class="container-fluid">
+
+            <script>
+                var local_storage_key = 'designdb_tabids';
+                var local_storage_key2 = 'designdb_lasttabid';
+
+                //localStorage.removeItem(local_storage_key);
+                //localStorage.removeItem(local_storage_key2);
+
+                function addTabId(_tabid){
+                    var tabids = localStorage.getItem(local_storage_key);
+                    var tabid_array = null;
+                    if ( tabids == null || tabids == "" || tabids.length == 0)
+                        tabid_array = [];
+                    else
+                        tabid_array = tabids.split(",");
+                    var result = 0;
+                    if ( tabid_array.indexOf(tabID) < 0 ) {
+                        tabid_array.push(tabID);
+                        if ( tabid_array.length == 1 )
+                            result = 1;
+                    }
+
+                    tabids = "";
+                    for(var i=0;i<tabid_array.length;i++){
+                        if ( tabids == "" )
+                            tabids = tabid_array[i];
+                        else
+                            tabids += "," + tabid_array[i];
+                    }
+                    localStorage.setItem(local_storage_key, tabids);
+                    return result;
+                }
+
+
+                var tabID = sessionStorage.tabID && sessionStorage.closedLastTab !== '2' ? sessionStorage.tabID : sessionStorage.tabID = Math.random();
+                sessionStorage.closedLastTab = '2';
+
+                var tabresult = addTabId(tabID);
+                var lasttabid = localStorage.getItem(local_storage_key2);
+
+                function sendRequestLogoutUser(){
+                    localStorage.setItem(local_storage_key, '');
+                    {% if g.user.is_authenticated %}
+                       window.location = "{{ url_for('logout')}}";
+                    {% endif %}
+                }
+                if ( tabresult == 1 && (lasttabid == null || lasttabid != tabID) ){
+                    sendRequestLogoutUser();
+                }
+
+                function removeTabId(_tabid){
+                    var tabids = localStorage.getItem(local_storage_key);
+                    var tabid_array = null;
+                    if ( tabids == null || tabids == "" || tabids.length == 0)
+                        tabid_array = [];
+                    else
+                        tabid_array = tabids.split(",");
+
+                    tabids = "";
+                    for(var i=0;i<tabid_array.length;i++){
+                        if ( tabid_array[i] == _tabid ) {
+                            continue;
+                        }
+
+                        if ( tabids == "" )
+                            tabids = tabid_array[i];
+                        else
+                            tabids += "," + tabid_array[i];
+                    }
+                    localStorage.setItem(local_storage_key, tabids);
+                    return;
+                }
+
+                function onClickedLogout(){
+                    localStorage.setItem(local_storage_key, '');
+                }
+
+
+            </script>

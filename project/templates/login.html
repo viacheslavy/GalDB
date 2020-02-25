@@ -1,0 +1,108 @@
+{% include "layout/header.html" %}
+
+<div class="login_form">
+    <div class="form-signin text-center">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" class="logo marT-30">
+        <div class="form-signin-heading">
+            DesignDB
+        </div>
+
+        <div autocomplete="false">
+            <input class="dot-object">
+            <input type="password" class="dot-object">
+
+            <div style="margin-top:15px;position:relative;">
+                <input id="username" type="text" class="input-block-level" placeholder="Username">
+                <i class="fa fa-user" style="position:absolute;right:9px;top:12px;"></i>
+            </div>
+            <div style="position:relative;">
+                <input id="password" type="password" class="input-block-level marB-0" placeholder="Password" autocomplete="nope">
+                <i class="fa fa-key" style="position:absolute;right:9px;top:12px;"></i>
+            </div>
+
+            <div id="error" class="marB-10 val_error"></div>
+
+            <button id="btn_login" class="btn btn-large btn-primary btn-block" type="submit">
+                <b>Login  <i class="fa fa-sign-in" aria-hidden="true" style="vertical-align:bottom;"></i></b>
+            </button>
+        </div>
+
+        <div style="margin-top:20px;">
+            <a href="" class="forgot-password">Forgot Password</a>
+        </div>
+    </div>
+</div>
+
+{% include "layout/footer.html" %}
+<script>
+    var working = false;
+    $(function() {
+        /**
+         * Called when hit sign in button
+         */
+        $('#btn_login').click(function() {
+            do_ajax_login();
+        });
+
+        $('#username, #password').keypress(function(event){
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+	        if(keycode == '13') {
+                do_ajax_login();
+            }
+        });
+
+        $('#username').focus();
+    });
+
+    /**
+     * request ajax call to login
+     */
+    function do_ajax_login() {
+        if (working) return;
+        working = true;
+
+        var fd = new FormData();
+        fd.append("username", $('#username').val());
+        fd.append("password", $('#password').val());
+
+        $.ajax({
+            type: 'POST',
+            url: "{{ url_for('validate_user')}}",
+            processData: false,
+            contentType: false,
+            dataType: "text",
+            data: fd,
+            success: function (response) {
+                var res = 0;
+                var msg = "Username or Password is not correct";
+                try {
+                    var data = JSON.parse(response);
+                    if (data['result'] == 'SUCCESS') {
+                        res = 1;
+                        window.location.href = "{{ url_for('recipe') }}";
+                    }else{
+                        if ( data['error'] == 1 ){
+                            msg = 'Wrong Username';
+                            $('#username').focus();
+                        }
+                        else if ( data['error'] == 2){
+                            msg = 'Wrong Password';
+                            $('#password').focus();
+                        }
+                    }
+                } catch (error) {
+                    console.log("Login Error_1:", error);
+                }
+                if ( res == false ){
+                    $('#error').html(msg);
+                }
+                working = false;
+            },
+            error: function (error) {
+                console.log("Login Error_2:", error);
+                working = false;
+            }
+        });
+    }
+
+</script>

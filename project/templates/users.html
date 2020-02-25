@@ -1,0 +1,706 @@
+{% include "layout/header.html" %}
+{% include "layout/nav.html" %}
+<input class="dot-object" autocomplete="nope">
+<input type="password" class="dot-object">
+
+<div id="operation_bar" class="row-fluid marB-10 text-right">
+    <button id="btn_add" class="btn btn-primary" onclick="clickedAdd();">New User</button>
+    <button id="btn_edit" class="btn btn-primary" onclick="clickedEdit();" disabled>Edit</button>
+    <button id="btn_save" class="btn btn-success hidden" onclick="clickedSave();">Save</button>
+    <button id="btn_cancel" class="btn btn-warning hidden" onclick="clickedCancel();">Cancel</button>
+</div>
+
+<div class="row-fluid">
+    <div class="span8">
+        <table id="users_table" class="table table-bordered" cellpadding="0" cellspacing="0">
+            <thead>
+                <th></th>
+                <th hidden>id</th>
+                <th hidden>roleid</th>
+                <th>Username</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th hidden>Amino Editor</th>
+                <th hidden>Design Editor</th>
+                <th hidden>Recipe Editor</th>
+            </thead>
+        </table>
+    </div>
+
+    <div class="span4">
+        <div class="row-fluid block">
+            <div class="header">
+                <div class="title">
+                    User Detail
+                </div>
+            </div>
+
+            <div class="clear"></div>
+            <div class="span12 content marL-0 padB-10">
+                <div class="row-fluid marT-10">
+                    <div class="span4 control-label">Username:</div>
+                    <div class="span7">
+                        <input id="username" class="form-control" type="text" disabled>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-5">
+                    <div class="span4 control-label">First Name:</div>
+                    <div class="span7">
+                        <input id="firstname" class="form-control" type="text" disabled>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-5">
+                    <div class="span4 control-label">Last Name:</div>
+                    <div class="span7">
+                        <input id="lastname" class="form-control" type="text" disabled>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-5">
+                    <div class="span4 control-label">Email:</div>
+                    <div class="span7">
+                        <input id="email" class="form-control" type="text" disabled>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-5">
+                    <label class="span4 control-label">Password:</label>
+                    <div class="span7">
+                        <button id="btn_reset_password" class="btn btn-primary" onclick="onClickedResetPassword();" disabled>Reset Password</button>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-5">
+                    <div class="span4 control-label">Role:</div>
+                    <div class="span7">
+                        <select id="role" class="form-control width-100" disabled>
+                            {% for userrole in userroles %}
+                                <option value="{{ userrole.roleid }}">{{ userrole.rolename }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-5">
+                    <div class="span4 control-label">Amino Editor:</div>
+                    <div class="span7">
+                        <select id="amino_editor" class="form-control width-100" disabled>
+                            <option value="-1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-5">
+                    <div class="span4 control-label">Design Editor:</div>
+                    <div class="span7">
+                        <select id="design_editor" class="form-control width-100" disabled>
+                            <option value="-1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-5">
+                    <div class="span4 control-label">Recipe Creator:</div>
+                    <div class="span7">
+                        <select id="recipe_editor" class="form-control width-100" disabled>
+                            <option value="-1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% include "layout/footer.html" %}
+
+
+<div id="modal_new_user" class="modal fade design-modal"  style="display: none;width:500px;margin-left:-250px;">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+                <div class="row-fluid title">
+                    Add New User
+                </div>
+
+                <div class="row-fluid">
+                    <label class="span4 control-label">Username:</label>
+                    <div class="span8">
+                        <input id="modal_new_user_username" type="text" class="form-control">
+                        <div id="modal_new_user_username_error" class="val_error text-left"></div>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <label class="span4 control-label">First Name:</label>
+                    <div class="span8">
+                        <input id="modal_new_user_firstname" type="text" class="form-control">
+                        <div id="modal_new_user_firstname_error" class="val_error text-left"></div>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <label class="span4 control-label">Last Name:</label>
+                    <div class="span8">
+                        <input id="modal_new_user_lastname" type="text" class="form-control">
+                        <div id="modal_new_user_lastname_error" class="val_error text-left"></div>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <label class="span4 control-label">Password:</label>
+                    <div class="span8">
+                        <input id="modal_new_user_password" type="password" class="form-control">
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <label class="span4 control-label">Confirm Password:</label>
+                    <div class="span8">
+                        <input id="modal_new_user_confirm_password" type="password" class="form-control">
+                        <div id="modal_new_user_password_error" class="val_error text-left"></div>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <label class="span4 control-label">Email:</label>
+                    <div class="span8">
+                        <input id="modal_new_user_email" type="text" class="form-control" placeholder="example@domain.com">
+                        <div id="modal_new_user_email_error" class="val_error text-left"></div>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <label class="span4 control-label">Role:</label>
+                    <div class="span8">
+                        <select id="modal_new_user_role" class="form-control width-100">
+                            {% for userrole in userroles %}
+                                <option value="{{ userrole['roleid'] }}">{{ userrole['rolename'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row-fluid marT-10">
+                    <div class="span12">
+                        <div id="modal_new_user_error" class="val_error"></div>
+                    </div>
+                </div>
+
+                <div class="row-fluid buttons">
+                    <div class="button left" onclick="onClickedConfirmAddNewUser();">Confirm</div>
+                    <div class="button right marL-10" onclick="onClickedCancelAddNewUser();">Cancel</div>
+                </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+    var usersTable;
+    var view_mode=0; //1: edit, 2: add
+    var current_userid = 0;
+    $(document).ready(function() {
+         usersTable = $('#users_table').DataTable({
+             "searching":false,
+             "bInfo":false,
+             "scrollY":400,
+             "scrollX":false,
+             "paging":false,
+             "select": {
+                 style: 'single'
+             },
+             "ordering":false,
+             columns:[
+                 {data:'checkbox',defaultContent:'',className:'select-checkbox',orderable:false},
+                 {data:'id'},
+                 {data:'roleid'},
+                 {data:'username'},
+                 {data:'firstname'},
+                 {data:'lastname'},
+                 {data:'email'},
+                 {data:'rolename'},
+                 {data:'amino_editor'},
+                 {data:'design_editor'},
+                 {data:'recipe_editor'}
+             ],
+             columnDefs:[
+                 {
+                     "targets":[0],
+                     "width":"20px"
+                 },
+                 {
+                     "targets":[1,2, 8, 9, 10],
+                     "visible":false,
+                 }
+             ]
+         });
+
+         usersTable.on( 'select', function ( e, dt, type, indexes ) {
+             if ( view_mode > 0 )
+                 return;
+
+             var rowData = usersTable.rows( ".selected" ).data().toArray();
+             if ( rowData && rowData.length > 0 ) {
+                 $('#btn_edit').removeAttr("disabled");
+                 current_userid = rowData[0]['id'];
+                 showUserDetail(rowData[0]);
+             }else{
+                 current_userid = 0;
+                 $('#btn_edit').attr("disabled", "disabled");
+             }
+         })
+         .on( 'deselect', function ( e, dt, type, indexes ) {
+             if ( view_mode > 0 )
+                 return;
+
+             current_userid = 0;
+             var rowData = usersTable.rows( ".selected" ).data().toArray();
+             if ( rowData && rowData.length > 0 ) {
+                 $('#btn_edit').removeAttr("disabled");
+             }else{
+                 $('#btn_edit').attr("disabled", "disabled");
+             }
+         });
+
+         $('#role').change(function() {
+             if ( $(this).val() == 2 ) // Admin
+             {
+                 $('#amino_editor').val(-1);
+                 $('#design_editor').val(-1);
+                 $('#recipe_editor').val(-1);
+
+                 $('#amino_editor').attr("disabled", "disabled");
+                 $('#design_editor').attr("disabled", "disabled");
+                 $('#recipe_editor').attr("disabled", "disabled");
+             }else{
+                 $('#amino_editor').val(0);
+                 $('#design_editor').val(0);
+                 $('#recipe_editor').val(0);
+
+                 $('#amino_editor').removeAttr("disabled");
+                 $('#design_editor').removeAttr("disabled");
+                 $('#recipe_editor').removeAttr("disabled");
+             }
+         });
+
+         getUsers();
+
+         adjustControls();
+         $(window).resize(function() {
+             adjustControls();
+         });
+    });
+
+    /* Adjust Control Layout */
+    function adjustControls(){
+        var table_header_height = $('#users_table_wrapper .dataTables_scrollHead').height();
+        var operation_bar_height = $('#operation_bar').height();
+		$('#users_table_wrapper .dataTables_scrollBody').height($(window).height() - table_header_height - operation_bar_height - 100);
+
+		usersTable.columns.adjust().draw();
+    }
+
+    /* Get All users */
+    function getUsers(){
+        usersTable.clear().draw();
+        $.ajax({
+            type:'POST',
+            url: "{{ url_for('get_users')}}",
+            processData:false,
+            contentType:false,
+            dataType:"text",
+            success: function(response) {
+                var msg = 'Operation failed.';
+                try{
+                    var data = JSON.parse(response);
+                    if ( data['result'] == 'SUCCESS'){
+                        usersTable.clear().draw();
+                        for(var i=0;i<data['data'].length;i++){
+                            var user = data['data'][i];
+                            usersTable.rows.add([
+                                {
+                                    'checkbox':'',
+                                    "id": user['id'],
+                                    "roleid": user['roleid'],
+                                    "rolename": user['rolename'],
+                                    "username": user['username'],
+                                    "firstname": user['firstname'],
+                                    "lastname": user['lastname'],
+                                    "email": user['email'],
+                                    "amino_editor": user['amino_editor'],
+                                    "design_editor": user['design_editor'],
+                                    "recipe_editor": user['recipe_editor']
+                                }
+                            ]);
+                        }
+                        usersTable.draw();
+                        adjustControls();
+
+                        return;
+                    }else{
+                        msg = data['msg'];
+                    }
+                }catch(error) {
+                    console.log(error);
+                }
+            },
+            error:function(error){
+                console.log(error);
+            }
+        });
+    }
+
+
+
+
+
+
+    /* Show User Detail */
+    function showUserDetail(_data){
+        $('#username').val(_data['username']);
+        $('#firstname').val(_data['firstname']);
+        $('#lastname').val(_data['lastname']);
+        $('#email').val(_data['email']);
+        $('#role').val(_data['roleid']);
+        $('#amino_editor').val(_data['amino_editor']);
+        $('#design_editor').val(_data['design_editor']);
+        $('#recipe_editor').val(_data['recipe_editor']);
+    }
+
+    /* Enable Controls */
+    function enableControls(_enable){
+        if ( _enable ){
+            $('#username').removeAttr("disabled");
+            $('#firstname').removeAttr("disabled");
+            $('#lastname').removeAttr("disabled");
+            $('#email').removeAttr("disabled");
+            $('#role').removeAttr("disabled");
+            $('#amino_editor').removeAttr("disabled");
+            $('#design_editor').removeAttr("disabled");
+            $('#recipe_editor').removeAttr("disabled");
+        }else{
+            $('#username').attr("disabled", "disabled");
+            $('#firstname').attr("disabled", "disabled");
+            $('#lastname').attr("disabled", "disabled");
+            $('#email').attr("disabled", "disabled");
+            $('#role').attr("disabled", "disabled");
+            $('#amino_editor').attr("disabled", "disabled");
+            $('#design_editor').attr("disabled", "disabled");
+            $('#recipe_editor').attr("disabled", "disabled");
+        }
+    }
+
+    /* Initialize Controls */
+    function initControls(){
+        $('#username').val("");
+        $('#firstname').val("");
+        $('#lastname').val("");
+        $('#email').val("");
+        $('#role').val(1);
+        $('#amino_editor').val(-1);
+        $('#design_editor').val(-1);
+        $('#recipe_editor').val(-1);
+        $('#btn_reset_password').attr("disabled", "disabled");
+    }
+
+    /* Clicked Add Button */
+    function clickedAdd(){
+        view_mode = 2;
+
+        $('#btn_add').addClass("hidden");
+        $('#btn_edit').addClass("hidden");
+        $('#btn_save').removeClass("hidden");
+        $('#btn_cancel').removeClass("hidden");
+
+        usersTable.rows(".selected").deselect();
+        initControls();
+        enableControls(true);
+        $('#role').trigger("change");
+    }
+
+
+    /* Clicked Edit Button */
+    function clickedEdit(){
+        if ( current_userid == 0 )
+            return;
+
+        view_mode = 1;
+        $('#btn_add').addClass("hidden");
+        $('#btn_edit').addClass("hidden");
+        $('#btn_save').removeClass("hidden");
+        $('#btn_cancel').removeClass("hidden");
+
+        enableControls(true);
+        if ( $('#role').val() == 2 ) //Admin
+        {
+            $('#amino_editor').attr("disabled", "disabled");
+            $('#design_editor').attr("disabled", "disabled");
+            $('#recipe_editor').attr("disabled", "disabled");
+        }
+
+        $('#btn_reset_password').removeAttr("disabled");
+    }
+
+    /* Clicked Save Button */
+    function clickedSave(){
+        var username = $('#username').val().trim();
+        var firstname = $('#firstname').val().trim();
+        var lastname = $('#lastname').val().trim();
+        var email = $('#email').val().trim();
+        var role = $('#role').val();
+        var rolename = $('#role option:selected').text();
+        var amino_editor = $('#amino_editor').val();
+        var design_editor = $('#design_editor').val();
+        var recipe_editor = $('#recipe_editor').val();
+
+        if ( username.length == 0 ){
+            $('#footer_modal_alert .modal-text').text("Username is required.");
+            $('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+            return;
+        }
+
+        if ( firstname.length == 0 ){
+            $('#footer_modal_alert .modal-text').text("First Name is required.");
+            $('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+            return;
+        }
+
+        if ( lastname.length == 0 ){
+            $('#footer_modal_alert .modal-text').text("Last Name is required.");
+            $('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+            return;
+        }
+
+        if ( email.length == 0 ){
+            $('#footer_modal_alert .modal-text').text("Email is required.");
+            $('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+            return;
+        }
+
+        if ( validateEmail(email) == false ){
+            $('#footer_modal_alert .modal-text').text("Email is invalid.");
+            $('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+            return;
+        }
+
+        var fd=new FormData();
+        fd.append("username", username);
+        fd.append("firstname", firstname);
+        fd.append("lastname", lastname);
+        fd.append("email", email);
+        fd.append("role", role);
+        fd.append("amino_editor", amino_editor);
+        fd.append("design_editor", design_editor);
+        fd.append("recipe_editor", recipe_editor);
+        if ( view_mode == 1 ){
+            fd.append("userid", current_userid);
+        }
+
+        if ( view_mode == 1 ){
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('edit_user')}}",
+                processData: false,
+                contentType: false,
+                dataType: "text",
+                data: fd,
+                success: function (response) {
+                    var msg = 'Operation Failed.';
+                    try {
+                        var data = JSON.parse(response);
+                        if (data['result'] == 'SUCCESS') {
+                            usersTable.rows(".selected").deselect();
+                            for(var i=0; i < usersTable.rows().count(); i++ ) {
+                                var tmp_object = usersTable.row(i).data();
+                                if ( tmp_object['id'] == current_userid ){
+                                    tmp_object['username'] = username;
+                                    tmp_object['firstname'] = firstname;
+                                    tmp_object['lastname'] = lastname;
+                                    tmp_object['email'] = email;
+                                    tmp_object['roleid'] = role;
+                                    tmp_object['rolename'] = rolename;
+                                    tmp_object['amino_editor'] = amino_editor;
+                                    tmp_object['design_editor'] = design_editor;
+                                    tmp_object['recipe_editor'] = recipe_editor;
+;
+                                    usersTable.row(i).select();
+                                    usersTable.row(i).data(tmp_object).draw();
+                                    break;
+                                }
+                            }
+
+                            view_mode = 0;
+                            $('#btn_save').addClass("hidden");
+                            $('#btn_cancel').addClass("hidden");
+                            $('#btn_add').removeClass("hidden");
+                            $('#btn_edit').removeClass("hidden");
+
+                            enableControls(false);
+
+                            return;
+                        } else {
+                            msg = data['msg'];
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
+                    $('#footer_modal_alert .modal-text').text(msg);
+                    $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+        else{
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('add_user')}}",
+                processData: false,
+                contentType: false,
+                dataType: "text",
+                data: fd,
+                success: function (response) {
+                    var msg = 'Operation Failed.';
+                    try {
+                        var data = JSON.parse(response);
+                        if (data['result'] == 'SUCCESS') {
+                            current_userid = data['id'];
+
+
+                            view_mode = 0;
+                            $('#btn_save').addClass("hidden");
+                            $('#btn_cancel').addClass("hidden");
+                            $('#btn_add').removeClass("hidden");
+                            $('#btn_edit').removeClass("hidden");
+                            enableControls(false);
+
+                            usersTable.rows.add([
+                            {
+                                "checkbox": '',
+                                "id": data['id'],
+                                "username": username,
+                                "firstname": firstname,
+                                "lastname": lastname,
+                                "email": email,
+                                "roleid": role,
+                                "rolename": rolename,
+                                "amino_editor": amino_editor,
+                                "design_editor": design_editor,
+                                "recipe_editor": recipe_editor
+                            }
+                            ]).select().draw();
+
+                            return;
+                        } else {
+                            msg = data['msg'];
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
+                    $('#footer_modal_alert .modal-text').text(msg);
+                    $('#footer_modal_alert').modal({backdrop: 'static', keyboard: false});
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+
+
+    }
+
+    /* Clicked Cancel Button */
+    function clickedCancel(){
+        view_mode = 0;
+        usersTable.rows(".selected").deselect();
+        initControls();
+        enableControls(false);
+        $('#btn_add').removeClass("hidden");
+        $('#btn_edit').removeClass("hidden");
+        $('#btn_edit').attr("disabled", "disabled");
+        $('#btn_save').addClass("hidden");
+        $('#btn_cancel').addClass("hidden");
+    }
+
+    /**
+     * Reset Password Click Event
+     * */
+    function onClickedResetPassword(){
+        if ( current_userid == 0 ){
+            $('#footer_modal_alert .modal-text').text("Please select a user.");
+            $('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+            return;
+        }
+
+        var email = "";
+        var username = "";
+        for(var i=0; i < usersTable.rows().count(); i++ ) {
+            var tmp_object = usersTable.row(i).data();
+            if (tmp_object['id'] == current_userid) {
+                email = tmp_object['email'];
+                username = tmp_object['username'];
+                break;
+            }
+        }
+
+        if ( email == null || email.length == 0 ){
+            $('#footer_modal_alert .modal-text').text("The Email address is required before a new password can be sent!");
+            $('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+            return;
+        }
+
+        if ( username == "" ) {
+            $('#footer_modal_alert .modal-text').text("Please select a user to update.");
+            $('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+            return;
+        }
+
+        resetAndSendEmail(email, username);
+    }
+
+
+    /**
+     * Reset user's password and send to him email
+     */
+    function resetAndSendEmail(email, username){
+        var fd=new FormData();
+        fd.append("email", email);
+        fd.append("username", username);
+
+        $.ajax({
+            type:'POST',
+            url: "{{ url_for('reset_password_send_email')}}",
+            processData:false,
+            contentType:false,
+            dataType:"text",
+            data:fd,
+            success: function(response) {
+                var msg = 'Resetting password failed.';
+                try{
+                    var data = JSON.parse(response);
+                    if ( data['result'] == 'SUCCESS'){
+                        $('#footer_modal_alert .modal-text').text("We sent reset password email to " + username + ". This user can get new password from this email.");
+                        $('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+                        return;
+                    }
+                }catch(error) {
+                    console.log(error);
+                }
+                $('#footer_modal_alert .modal-text').text(msg);
+                $('#footer_modal_alert').modal({backdrop:'static', keyboard:false});
+            },
+            error:function(error){
+                console.log(error);
+            }
+        });
+    }
+</script>

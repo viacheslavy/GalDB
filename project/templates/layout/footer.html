@@ -1,0 +1,102 @@
+
+
+        </div> <!-- End of Main Container -->
+
+
+        <div id="footer_modal_alert" class="modal fade alert-modal"  style="display: none;">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="modal-text marT-10">
+
+                        </div>
+                        <div class="buttons marT-20">
+                            <div class="button left" onclick="onClicked_Footer_Modal_Alert_Ok();">Ok</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="{{ url_for('static', filename='vendors/jquery-1.12.4.js') }}"></script>
+        <script src="{{ url_for('static', filename='vendors/jquery-ui-1.10.3.js') }}"></script>
+        <script src="{{ url_for('static', filename='vendors/bootstrap/js/bootstrap.min.js') }}"></script>
+
+        <!-- DataTables-->
+        <script src="{{ url_for('static', filename='vendors/datatables/media/js/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='vendors/datatables/extensions/KeyTable/js/dataTables.keyTable.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='vendors/datatables/extensions/Select/js/dataTables.select.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='vendors/datatables/extensions/Editor-1.7.2/js/dataTables.editor.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='vendors/datatables/extensions/Editor-1.7.2/js/editor.autoComplete.js') }}"></script>
+        <script src="{{ url_for('static', filename='vendors/datatables/extensions/Scroller/js/dataTables.scroller.min.js') }}"></script>
+        <!-- DataTables End-->
+
+
+
+        <!-- UniForm -->
+        <script src="{{ url_for('static', filename='vendors/jquery.uniform.min.js') }}"></script>
+        <!-- UniForm End-->
+
+        <!-- Bootstrap toggle -->
+        <script src="{{ url_for('static', filename='vendors/bootstrap-toggle/bootstrap-toggle.min.js') }}"></script>
+        <!-- Bootstrap toggle end -->
+
+        <!-- Chosen -->
+        <script src="{{ url_for('static', filename='vendors/chosen.jquery.min.js') }}"></script>
+        <!-- Chosen End -->
+
+        <!-- BootStrap DatePicker -->
+        <script src="{{ url_for('static', filename='vendors/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
+        <!-- BootStrap DatePicker End -->
+
+        <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+
+        <script>
+        function onClicked_Footer_Modal_Alert_Ok(){
+            $('#footer_modal_alert').modal('hide');
+        }
+
+        $(window).unload(function(){
+            sessionStorage.closedLastTab = '1';
+            localStorage.setItem(local_storage_key2, tabID);
+            removeTabId(tabID);
+        });
+
+        var requestInterval = null;
+        $(function(){
+            sendRequest();
+            $("input[type='text'], textarea").attr('spellcheck',false);
+        });
+
+        function setProgressBarPercent(_id, _percent){
+            var elem = $(_id + " .bar");
+            elem.width(_percent + '%');
+
+            var elem2 = $(_id + " .text");
+            elem2.html(_percent + '%');
+        }
+
+        /**
+         * send user alive to server
+         */
+        function sendRequest(){
+            $.ajax({
+                type:'POST',
+                url: "{{ url_for('send_last_request')}}",
+                processData:false,
+                contentType:false,
+                dataType:"text",
+                async:true,
+                success: function(response) {
+                    setTimeout(sendRequest, 1000 * 30);
+                },
+                error:function(error){
+                    console.log(error);
+                    setTimeout(sendRequest, 1000 * 30);
+                }
+            });
+        }
+        </script>
+    </body>
+</html>
+
